@@ -7,11 +7,14 @@ const displayRecipesCards = () => {
 
   console.log("recipes", recipes);
 
+  let recipesToAdd = "";
+
   recipes.map((recipe) => {
     const recipeModel = recipeTemplate(recipe);
-    const recipeCard = recipeModel.setRecipeCard();
-    recipesWrapper.appendChild(recipeCard);
+    recipesToAdd += recipeModel.setRecipeCard();
   });
+
+  recipesWrapper.innerHTML = recipesToAdd;
 };
 
 const filterRecipes = () => {
