@@ -5,6 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Les petits plats</title>
     <link href="./assets/tailwind-compiled.css" rel="stylesheet" />
+    <link href="./assets/favicon.ico" rel="icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@200..800&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body></body>
+  <body class="bg-gray-200">
+    <header class="flex justify-center items-center">
+      <img
+        class="w-full h-banner object-cover"
+        src="./assets/images/banner.svg"
+        alt="mélange de différents plats dans une même assiette"
+      />
+      <div class="flex absolute pt-12 pl-16 gap-2 top-0 left-0">
+        <img src="./assets/logo.svg" alt="les petits plats logo" />
+        <img src="./assets/ellipse-logo.svg" alt="ellipse logo" />
+      </div>
+      <h1 class="absolute text-yellow text-l text-center font-title 2xl:w-6/12">
+        CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN,SIMPLES ET DÉLICIEUSES
+      </h1>
+      <div class="absolute w-3/4 flex justify-center">
+        <input
+          type="search"
+          class="rounded-xl py-6 pl-8 font-body font-normal text-base text-grey absolute mt-4 w-3/4 top-14"
+          placeholder="Rechercher une recette, un ingrédient, ..."
+        />
+        <div class="w-search flex justify-end">
+          <img
+            src="./assets/search-icon.svg"
+            alt="search icon"
+            class="p-3 bg-black rounded-xl absolute top-20"
+          />
+        </div>
+      </div>
+    </header>
+    <main class="main">
+      <div class="filters-wrappers pt-5 px-24"></div>
+      <!-- <span>Ingrédients</span>
+      <span>Appareils</span>
+      <span>Ustensiles</span> -->
+      <div class="recipes-wrapper flex gap-12 flex-wrap px-24 pt-14 pb-48 justify-center"></div>
+    </main>
+    <script type="module" src="./scripts/page/home.js"></script>
+  </body>
 </html>
