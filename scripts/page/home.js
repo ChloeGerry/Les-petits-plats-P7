@@ -1,24 +1,27 @@
 import { recipes } from "../../recipes.js";
-import { filteredRecipes } from "../filteredRecipes.js";
-import { recipeTemplate } from "../template/recipeTemplate.js";
+import { FilterTemplateClass } from "../filteredRecipes.js";
+import { RecipeTemplateClass } from "../template/recipeTemplate.js";
 
 const displayRecipesCards = () => {
-  const recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
-
   console.log("recipes", recipes);
-
+  const recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
+  const recipeTemplate = new RecipeTemplateClass();
   let recipesToAdd = "";
 
-  recipes.map((recipe) => {
-    const recipeModel = recipeTemplate(recipe);
-    recipesToAdd += recipeModel.setRecipeCard();
-  });
-
+  recipes.map((recipe) => (recipesToAdd += recipeTemplate.getRecipeCard(recipe)));
   recipesWrapper.innerHTML = recipesToAdd;
 };
 
 const filterRecipes = () => {
-  filteredRecipes(recipes);
+  const filtersCategories = ["Ingrédients", "Appareils", "Ustensiles"];
+  const filterTemplate = new FilterTemplateClass();
+
+  filtersCategories.map((filterCategory) =>
+    filterTemplate.filtersTemplate(filterCategory, recipes)
+  );
+
+  filterTemplate.filteredRecipes(recipes);
+  filterTemplate.handleFilterValuesDisplay();
 };
 
 const init = () => {

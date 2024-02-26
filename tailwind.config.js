@@ -6,6 +6,7 @@ module.exports = {
       colors: {
         yellow: "#FFD15B",
         grey: "#7A7A7A",
+        lightGrey: "#C6C6C6",
       },
       fontSize: {
         s: "0.8rem",
@@ -29,6 +30,9 @@ module.exports = {
       },
       letterSpacing: {
         widest: "0.070em",
+      },
+      boxShadow: {
+        m: "0px 4px 34px 30px #0000000a",
       },
     },
   },
