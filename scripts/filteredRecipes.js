@@ -4,6 +4,7 @@ export class FilterTemplateClass {
   }
 
   filtersTemplate = (filterName, recipes) => {
+    // get filters values and put them in array
     const ingredients = [];
     const appliances = [];
     const ustensils = [];
@@ -25,6 +26,7 @@ export class FilterTemplateClass {
       (recipe) => !appliances.includes(recipe.appliance) && appliances.push(recipe.appliance)
     );
 
+    // create a function to map filters values
     const displayFiltersValues = (filterElements) =>
       filterElements.map((element) => `<p class="text-sm font-normal m-0">${element}</p>`);
 
@@ -42,6 +44,7 @@ export class FilterTemplateClass {
       },
     };
 
+    // join filters values to the wrapper using the filtersElements array
     recipesFilterValues = `<div class="flex flex-col gap-3">${filtersElements[filterName][
       "display"
     ].join("")}</div>`;
@@ -67,13 +70,11 @@ export class FilterTemplateClass {
 
     for (let i = 0; i < arrowsIcons.length; i++) {
       arrowsIcons[i].addEventListener("click", () => {
-        console.log("click");
         isFilterOpen = !isFilterOpen;
         const filterDisplayWrapper = document.getElementsByClassName("filter-search-wrapper");
         const filterWrapper = document.getElementsByClassName("filter-wrapper");
 
         if (isFilterOpen) {
-          console.log("filterDisplayWrapper[i]", filterDisplayWrapper[i]);
           filterDisplayWrapper[i].style.display = "flex";
           arrowsIcons[i].style.transform = "rotate(180deg)";
           filterWrapper[i].style.height = "315px";
