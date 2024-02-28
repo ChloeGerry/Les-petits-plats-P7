@@ -1,6 +1,6 @@
 import { recipes } from "../../recipes.js";
-import { FilterTemplateClass } from "../filteredRecipes.js";
-import { RecipeTemplateClass } from "../template/recipeTemplate.js";
+import { FilterTemplateClass } from "../templates/filterRecipesClass.js";
+import { RecipeTemplateClass } from "../templates/recipeTemplateClass.js";
 
 const displayRecipesCards = () => {
   console.log("recipes", recipes);

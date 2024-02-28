@@ -1,6 +1,7 @@
 export class FilterTemplateClass {
   constructor() {
-    this.filtersWrapper = document.getElementsByClassName("filters-section")[0];
+    this.filtersSection = document.getElementsByClassName("filters-section")[0];
+    this.filtersWrapper = document.getElementsByClassName("filters-wrappers")[0];
   }
 
   filtersTemplate = (filterName, recipes) => {
@@ -49,7 +50,7 @@ export class FilterTemplateClass {
       "display"
     ].join("")}</div>`;
 
-    this.filtersWrapper.innerHTML += `<div class="filter-wrapper flex z-10 flex-col bg-white p-4 h-fit rounded-xl w-56 overflow-y-hidden">
+    this.filtersSection.innerHTML += `<div class="filter-wrapper flex z-10 flex-col bg-white p-4 h-fit rounded-xl w-56 overflow-y-hidden">
       <div class="flex justify-between w-48">
         ${filterName}
         <img class="arrow-icon cursor-pointer" src="./assets/arrow.svg" alt="arrow icon">
@@ -88,7 +89,7 @@ export class FilterTemplateClass {
   };
 
   filterItems = () => {
-    this.filtersWrapper.innerHTML += `<div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between">
+    this.filtersSection.innerHTML += `<div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between">
     <p class="text-sm font-normal">Coco</p>
     <img src="./assets/remove-icon.svg" alt="cross icon">
   </div>`;
