@@ -87,6 +87,13 @@ export class FilterTemplateClass {
     }
   };
 
+  filterItems = () => {
+    this.filtersWrapper.innerHTML += `<div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between">
+    <p class="text-sm font-normal">Coco</p>
+    <img src="./assets/remove-icon.svg" alt="cross icon">
+  </div>`;
+  };
+
   filteredRecipes = (recipes) => {
     this.filtersWrapper.innerHTML += `<p class="font-title font-normal text-xl text-right">${recipes.length} recettes</p>`;
   };
