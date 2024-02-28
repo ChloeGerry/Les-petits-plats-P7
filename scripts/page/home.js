@@ -1,6 +1,7 @@
 import { recipes } from "../../recipes.js";
 import { FilterTemplateClass } from "../templates/filterRecipesClass.js";
 import { RecipeTemplateClass } from "../templates/recipeTemplateClass.js";
+import { SearchRecipeClass } from "../utils/searchRecipeClass.js";
 
 const displayRecipesCards = () => {
   console.log("recipes", recipes);
@@ -20,13 +21,15 @@ const filterRecipes = () => {
     filterTemplate.filtersTemplate(filterCategory, recipes)
   );
 
-  filterTemplate.filteredRecipes(recipes);
+  filterTemplate.displayNumberOfRecipes(recipes);
   filterTemplate.handleFilterValuesDisplay();
 };
 
 const init = () => {
   filterRecipes();
   displayRecipesCards();
+  const search = new SearchRecipeClass();
+  search.searchRecipe(recipes);
 };
 
 init();
