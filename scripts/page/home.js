@@ -1,6 +1,7 @@
 import { recipes } from "../../recipes.js";
 import { FilterTemplateClass } from "../templates/filterRecipesClass.js";
 import { RecipeTemplateClass } from "../templates/recipeTemplateClass.js";
+import { searchRecipeForLoop } from "../utils/searchRecipe-forLoop.js";
 
 const displayRecipesCards = () => {
   console.log("recipes", recipes);
@@ -27,6 +28,7 @@ const filterRecipes = () => {
 const init = () => {
   filterRecipes();
   displayRecipesCards();
+  searchRecipeForLoop(recipes);
 };
 
 init();
