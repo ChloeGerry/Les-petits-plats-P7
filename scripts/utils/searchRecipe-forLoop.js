@@ -20,29 +20,34 @@ export const searchRecipeForLoop = (recipes) => {
         // recipes.map((recipe) => (displayMatchingRecipes += recipeTemplate.getRecipeCard(recipe)));
         // recipesWrapper.innerHTML = displayMatchingRecipes;
       });
+      const recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
+      const recipeTemplate = new RecipeTemplateClass();
+      let displayMatchingRecipes = "";
 
       for (let i = 0; i < recipes.length; i++) {
         for (let j = 0; j < recipes[i].ingredients.length; j++) {
+          const isNameEqual = recipes[i].name.toLowerCase().match(inputValue.toLowerCase());
+          const isDescriptionEqual = recipes[i].description
+            .toLowerCase()
+            .match(inputValue.toLowerCase());
+          const isIngredientsEqual = recipes[i].ingredients[j].ingredient
+            .toLowerCase()
+            .match(inputValue.toLowerCase());
+
           if (
-            recipes[i].name.toLowerCase().match(inputValue.toLowerCase()) ||
-            recipes[i].description.toLowerCase().match(inputValue.toLowerCase()) ||
-            recipes[i].ingredients[j].ingredient.toLowerCase().match(inputValue.toLowerCase())
+            (isNameEqual || isDescriptionEqual || isIngredientsEqual) &&
+            !matchingRecipes.includes(recipes[i])
           ) {
-            if (!matchingRecipes.includes(recipes[i])) {
-              matchingRecipes.push(recipes[i]);
-            }
+            matchingRecipes.push(recipes[i]);
           }
 
-          const recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
-          const recipeTemplate = new RecipeTemplateClass();
-          let displayMatchingRecipes = "";
-
-          matchingRecipes.map(
+          matchingRecipes.forEach(
             (recipe) => (displayMatchingRecipes += recipeTemplate.getRecipeCard(recipe))
           );
-          recipesWrapper.innerHTML = displayMatchingRecipes;
         }
       }
+
+      recipesWrapper.innerHTML = displayMatchingRecipes;
     } else return;
   });
 };
