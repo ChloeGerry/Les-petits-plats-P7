@@ -45,19 +45,42 @@ export class SearchRecipeClass {
           this.recipesWrapper.innerHTML = displayMatchingRecipes;
         });
 
-        const arrayRecipe = [];
+        const arrayRecipe = this.searchRecipeAlgorith(recipes, inputValue, matchingRecipes);
 
         if (!arrayRecipe || arrayRecipe.length === 0) {
           this.errorMessage.style.visibility = "visible";
           this.errorMessage.textContent = `Aucune recette ne contient ${inputValue} vous pouvez chercher 'tarte aux pommes', 'chocolat' à la place`;
         }
 
-        // arrayRecipe.forEach(
-        //   (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
-        // );
-        // this.numberOfRecipe.displayNumberOfRecipes(arrayRecipe);
-        // this.recipesWrapper.innerHTML = displayMatchingRecipes;
+        arrayRecipe.forEach(
+          (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
+        );
+
+        this.numberOfRecipe.displayNumberOfRecipes(arrayRecipe);
+        this.recipesWrapper.innerHTML = displayMatchingRecipes;
       }
     });
+  };
+
+  searchRecipeAlgorith = (recipes, inputValue, matchingRecipes) => {
+    for (let i = 0; i < recipes.length; i++) {
+      for (let j = 0; j < recipes[i].ingredients.length; j++) {
+        const isNameEqual = recipes[i].name.toLowerCase().match(inputValue.toLowerCase());
+        const isDescriptionEqual = recipes[i].description
+          .toLowerCase()
+          .match(inputValue.toLowerCase());
+        const isIngredientsEqual = recipes[i].ingredients[j].ingredient
+          .toLowerCase()
+          .match(inputValue.toLowerCase());
+
+        if (
+          (isNameEqual || isDescriptionEqual || isIngredientsEqual) &&
+          !matchingRecipes.includes(recipes[i])
+        ) {
+          matchingRecipes.push(recipes[i]);
+        }
+      }
+    }
+    return matchingRecipes;
   };
 }
