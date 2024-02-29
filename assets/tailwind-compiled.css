@@ -693,6 +693,10 @@ video {
   top: 2.25rem;
 }
 
+.top-\[470px\] {
+  top: 470px;
+}
+
 .isolate {
   isolation: isolate;
 }
@@ -2335,6 +2339,11 @@ video {
 .text-grey {
   --tw-text-opacity: 1;
   color: rgb(122 122 122 / var(--tw-text-opacity));
+}
+
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
 .text-yellow {

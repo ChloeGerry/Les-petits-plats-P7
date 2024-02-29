@@ -1,7 +1,7 @@
 export class FilterTemplateClass {
   constructor() {
     this.filtersSection = document.getElementsByClassName("filters-section")[0];
-    this.filtersWrapper = document.getElementsByClassName("filters-wrappers")[0];
+    this.numberOfRecipes = document.getElementsByClassName("numbers-recipes")[0];
   }
 
   filtersTemplate = (filterName, recipes) => {
@@ -95,7 +95,7 @@ export class FilterTemplateClass {
   </div>`;
   };
 
-  filteredRecipes = (recipes) => {
-    this.filtersWrapper.innerHTML += `<p class="font-title font-normal text-xl text-right">${recipes.length} recettes</p>`;
+  displayNumberOfRecipes = (recipes) => {
+    this.numberOfRecipes.textContent = `${recipes.length} recettes`;
   };
 }
