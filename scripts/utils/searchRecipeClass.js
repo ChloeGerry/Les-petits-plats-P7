@@ -11,7 +11,7 @@ export class SearchRecipeClass {
     this.numberOfRecipe = new FilterTemplateClass();
   }
 
-  searchRecipe = (recipes) => {
+  searchRecipeAlgorithmTemplate = (recipes) => {
     this.searchInput.addEventListener("input", (event) => {
       event.preventDefault();
       let inputValue = event.target.value;
@@ -42,22 +42,21 @@ export class SearchRecipeClass {
             (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
           );
 
-          this.numberOfRecipe.displayNumberOfRecipes(recipes);
           this.recipesWrapper.innerHTML = displayMatchingRecipes;
         });
 
         const arrayRecipe = [];
 
-        if (!!arrayRecipe) {
+        if (!arrayRecipe || arrayRecipe.length === 0) {
           this.errorMessage.style.visibility = "visible";
           this.errorMessage.textContent = `Aucune recette ne contient ${inputValue} vous pouvez chercher 'tarte aux pommes', 'chocolat' à la place`;
         }
 
-        // recipes.forEach(
-        //   (recipe) => (displayMatchingRecipes += recipeTemplate.getRecipeCard(recipe))
+        // arrayRecipe.forEach(
+        //   (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
         // );
-
-        this.recipesWrapper.innerHTML = displayMatchingRecipes;
+        // this.numberOfRecipe.displayNumberOfRecipes(arrayRecipe);
+        // this.recipesWrapper.innerHTML = displayMatchingRecipes;
       }
     });
   };
