@@ -21,6 +21,12 @@ export class SearchRecipeClass {
       if (!inputValue) {
         this.errorMessage.style.visibility = "hidden";
         this.deleteSearchIcon.style.visibility = "hidden";
+        this.numberOfRecipe.displayNumberOfRecipes(recipes);
+        recipes.forEach(
+          (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
+        );
+
+        this.recipesWrapper.innerHTML = displayMatchingRecipes;
       }
 
       if (inputValue.length > 0 && inputValue.length < 3) {

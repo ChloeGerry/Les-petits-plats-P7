@@ -29,7 +29,7 @@ const init = () => {
   filterRecipes();
   displayRecipesCards();
   const search = new SearchRecipeClass();
-  search.searchRecipe(recipes);
+  search.searchRecipeAlgorithmTemplate(recipes);
 };
 
 init();
