@@ -68,7 +68,22 @@ export class SearchRecipeClass {
   };
 
   searchRecipeAlgorith = (recipes, inputValue, matchingRecipes) => {
-    // add search algorithm for both methods
+    recipes.forEach((recipe) => {
+      recipe.ingredients.filter((recipeIngredient) => {
+        const isNameEqual = recipe.name.toLowerCase().match(inputValue.toLowerCase());
+        const isDescriptionEqual = recipe.description.toLowerCase().match(inputValue.toLowerCase());
+        const isIngredientsEqual = recipeIngredient.ingredient
+          .toLowerCase()
+          .match(inputValue.toLowerCase());
+
+        if (
+          (isNameEqual || isDescriptionEqual || isIngredientsEqual) &&
+          !matchingRecipes.includes(recipe)
+        ) {
+          matchingRecipes.push(recipe);
+        }
+      });
+    });
     return matchingRecipes;
   };
 }
