@@ -61,7 +61,6 @@ export class SearchRecipeClass {
         arrayRecipe.forEach(
           (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
         );
-
         this.numberOfRecipe.displayNumberOfRecipes(arrayRecipe);
         this.recipesWrapper.innerHTML = displayMatchingRecipes;
       }
