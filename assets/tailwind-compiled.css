@@ -697,6 +697,14 @@ video {
   top: 470px;
 }
 
+.top-28 {
+  top: 7rem;
+}
+
+.top-\[500px\] {
+  top: 500px;
+}
+
 .isolate {
   isolation: isolate;
 }
@@ -779,6 +787,14 @@ video {
 
 .mt-4 {
   margin-top: 1rem;
+}
+
+.mt-8 {
+  margin-top: 2rem;
+}
+
+.mt-3 {
+  margin-top: 0.75rem;
 }
 
 .box-border {
