@@ -697,6 +697,10 @@ video {
   top: 500px;
 }
 
+.top-8 {
+  top: 2rem;
+}
+
 .isolate {
   isolation: isolate;
 }
@@ -2152,6 +2156,10 @@ video {
 
 .pt-8 {
   padding-top: 2rem;
+}
+
+.pb-14 {
+  padding-bottom: 3.5rem;
 }
 
 .text-left {

@@ -11,6 +11,11 @@ export class SearchRecipeClass {
     this.numberOfRecipe = new FilterTemplateClass();
   }
 
+  /**
+   * coucou je suis une méthode
+   * @param {[string]} recipes - list of all recipes
+   * @returns void
+   */
   searchRecipeAlgorithmTemplate = (recipes) => {
     this.searchInput.addEventListener("input", (event) => {
       event.preventDefault();
