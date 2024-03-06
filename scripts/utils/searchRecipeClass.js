@@ -55,7 +55,7 @@ export class SearchRecipeClass {
 
         if (!arrayRecipe || arrayRecipe.length === 0) {
           this.errorMessage.style.visibility = "visible";
-          this.errorMessage.textContent = `Aucune recette ne contient ${inputValue} vous pouvez chercher 'tarte aux pommes', 'chocolat' à la place`;
+          this.errorMessage.textContent = `Aucune recette ne contient ${inputValue}, vous pouvez chercher 'tarte aux pommes' ou 'chocolat' par exemple`;
         }
 
         // arrayRecipe.forEach(
