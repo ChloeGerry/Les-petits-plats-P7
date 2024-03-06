@@ -51,19 +51,24 @@ export class SearchRecipeClass {
           this.recipesWrapper.innerHTML = displayMatchingRecipes;
         });
 
-        const arrayRecipe = [];
+        const arrayRecipe = this.searchRecipeAlgorith(recipes, inputValue, matchingRecipes);
 
         if (!arrayRecipe || arrayRecipe.length === 0) {
           this.errorMessage.style.visibility = "visible";
           this.errorMessage.textContent = `Aucune recette ne contient ${inputValue}, vous pouvez chercher 'tarte aux pommes' ou 'chocolat' par exemple`;
         }
 
-        // arrayRecipe.forEach(
-        //   (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
-        // );
-        // this.numberOfRecipe.displayNumberOfRecipes(arrayRecipe);
-        // this.recipesWrapper.innerHTML = displayMatchingRecipes;
+        arrayRecipe.forEach(
+          (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
+        );
+        this.numberOfRecipe.displayNumberOfRecipes(arrayRecipe);
+        this.recipesWrapper.innerHTML = displayMatchingRecipes;
       }
     });
+  };
+
+  searchRecipeAlgorith = (recipes, inputValue, matchingRecipes) => {
+    // add search algorithm for both methods
+    return matchingRecipes;
   };
 }
