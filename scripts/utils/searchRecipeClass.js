@@ -12,10 +12,11 @@ export class SearchRecipeClass {
   }
 
   /**
-   * coucou je suis une méthode
-   * @param {[string]} recipes - list of all recipes
-   * @returns void
+   * method to template the main search algorithm
+   * @param {[object]} recipes - list of all recipes
+   * @returns the cards of the matching recipes
    */
+
   searchRecipeAlgorithmTemplate = (recipes) => {
     this.searchInput.addEventListener("input", (event) => {
       event.preventDefault();
@@ -56,7 +57,7 @@ export class SearchRecipeClass {
           this.recipesWrapper.innerHTML = displayMatchingRecipes;
         });
 
-        const arrayRecipe = this.searchRecipeAlgorith(recipes, inputValue, matchingRecipes);
+        const arrayRecipe = this.searchRecipeAlgorithm(recipes, inputValue, matchingRecipes);
 
         if (!arrayRecipe || arrayRecipe.length === 0) {
           this.errorMessage.style.visibility = "visible";
@@ -72,7 +73,15 @@ export class SearchRecipeClass {
     });
   };
 
-  searchRecipeAlgorith = (recipes, inputValue, matchingRecipes) => {
+  /**
+   * method that contains the main search algorithm
+   * @param {[object]} recipes - list of all recipes
+   * @param {string} inputValue - value of the input search
+   * @param {[object]} matchingRecipes - list of recipes matching the input search
+   * @returns the list of the matching recipes
+   */
+
+  searchRecipeAlgorithm = (recipes, inputValue, matchingRecipes) => {
     // add search algorithm for both methods
     return matchingRecipes;
   };

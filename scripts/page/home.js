@@ -1,6 +1,7 @@
 import { recipes } from "../../recipes.js";
 import { FilterTemplateClass } from "../templates/filterRecipesClass.js";
 import { RecipeTemplateClass } from "../templates/recipeTemplateClass.js";
+import { APPLIANCES, INGREDIENTS, USTENSILS } from "../utils/constants.js";
 import { SearchRecipeClass } from "../utils/searchRecipeClass.js";
 
 const displayRecipesCards = () => {
@@ -14,7 +15,7 @@ const displayRecipesCards = () => {
 };
 
 const filterRecipes = () => {
-  const filtersCategories = ["Ingrédients", "Appareils", "Ustensiles"];
+  const filtersCategories = [INGREDIENTS, APPLIANCES, USTENSILS];
   const filterTemplate = new FilterTemplateClass();
 
   filtersCategories.map((filterCategory) =>
@@ -23,6 +24,9 @@ const filterRecipes = () => {
 
   filterTemplate.displayNumberOfRecipes(recipes);
   filterTemplate.handleFilterValuesDisplay();
+
+  const filtersElements = filterTemplate.getFiltersItems(recipes);
+  const searchByFilter = filterTemplate.searchByItemsFilters(filtersElements);
 };
 
 const init = () => {
