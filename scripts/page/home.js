@@ -24,9 +24,6 @@ const filterRecipes = () => {
 
   filterTemplate.displayNumberOfRecipes(recipes);
   filterTemplate.handleFilterValuesDisplay();
-
-  const filtersElements = filterTemplate.getFiltersItems(recipes);
-  const searchByFilter = filterTemplate.searchByItemsFilters(filtersElements);
 };
 
 const init = () => {

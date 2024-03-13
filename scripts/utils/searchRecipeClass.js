@@ -8,7 +8,8 @@ export class SearchRecipeClass {
     this.recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
     this.errorMessage = document.getElementsByClassName("error-message")[0];
     this.recipeTemplate = new RecipeTemplateClass();
-    this.numberOfRecipe = new FilterTemplateClass();
+    this.filterTemplate = new FilterTemplateClass();
+    this.filtersItems = null;
   }
 
   /**
@@ -18,6 +19,13 @@ export class SearchRecipeClass {
    */
 
   searchRecipeAlgorithmTemplate = (recipes) => {
+    const filtersElements = this.filterTemplate.getFiltersItems(recipes);
+    this.filterTemplate.onChangeUpdateFiltersItems(
+      filtersElements,
+      (matchingFiltersItems) => (this.filtersItems = matchingFiltersItems)
+    );
+    const chloe = "’coucou’";
+
     this.searchInput.addEventListener("input", (event) => {
       event.preventDefault();
       let inputValue = event.target.value;
@@ -27,7 +35,7 @@ export class SearchRecipeClass {
       if (!inputValue) {
         this.errorMessage.style.visibility = "hidden";
         this.deleteSearchIcon.style.visibility = "hidden";
-        this.numberOfRecipe.displayNumberOfRecipes(recipes);
+        this.filterTemplate.displayNumberOfRecipes(recipes);
         recipes.forEach(
           (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
         );
@@ -49,7 +57,7 @@ export class SearchRecipeClass {
           this.errorMessage.style.visibility = "hidden";
           event.target.value = "";
 
-          this.numberOfRecipe.displayNumberOfRecipes(recipes);
+          this.filterTemplate.displayNumberOfRecipes(recipes);
           recipes.forEach(
             (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
           );
@@ -58,6 +66,7 @@ export class SearchRecipeClass {
         });
 
         const arrayRecipe = this.searchRecipeAlgorithm(recipes, inputValue, matchingRecipes);
+        console.log("this.filtersItems", this.filtersItems);
 
         if (!arrayRecipe || arrayRecipe.length === 0) {
           this.errorMessage.style.visibility = "visible";
@@ -67,7 +76,7 @@ export class SearchRecipeClass {
         arrayRecipe.forEach(
           (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
         );
-        this.numberOfRecipe.displayNumberOfRecipes(arrayRecipe);
+        this.filterTemplate.displayNumberOfRecipes(arrayRecipe);
         this.recipesWrapper.innerHTML = displayMatchingRecipes;
       }
     });
@@ -100,6 +109,7 @@ export class SearchRecipeClass {
         }
       }
     }
+    console.log("matchingRecipes", matchingRecipes);
     return matchingRecipes;
   };
 }

@@ -140,14 +140,31 @@ export class FilterTemplateClass {
   /**
    * method that contains the filter search algorithm
    * @param {{object}} arrayOfFiltersItems - list of all filters items
-   * @returns the list of all matching filters values with the filter search input
+   * @returns {void}
    */
 
-  searchByItemsFilters = (arrayOfFiltersItems) => {
-    const matchingFiltersItems = [];
+  onChangeUpdateFiltersItems = (arrayOfFiltersItems, searchByItemsFilters = () => {}) => {
+    for (let i = 0; i < this.inputSearchFilterCategory.length; i++) {
+      this.inputSearchFilterCategory[i].addEventListener("input", (event) => {
+        event.preventDefault();
+        const inputValue = event.target.value;
+        const choosenCategory = this.filterCategories[i].innerHTML;
+        const filteredItems = arrayOfFiltersItems[choosenCategory]["filtersItems"];
 
-    // add algorith for filter search
+        if (inputValue) {
+          const matchingFiltersItems = [];
+          for (let j = 0; j < filteredItems.length; j++) {
+            const matchingFiltersValue = filteredItems[j]
+              .toLowerCase()
+              .match(inputValue.toLowerCase());
 
-    return matchingFiltersItems;
+            if (matchingFiltersValue && !matchingFiltersItems.includes(filteredItems[j])) {
+              matchingFiltersItems.push(filteredItems[j]);
+            }
+          }
+          searchByItemsFilters(matchingFiltersItems);
+        }
+      });
+    }
   };
 }
