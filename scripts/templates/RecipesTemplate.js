@@ -1,4 +1,4 @@
-export class RecipeTemplateClass {
+export class RecipesTemplate {
   constructor() {}
 
   getRecipeCard(recipe) {

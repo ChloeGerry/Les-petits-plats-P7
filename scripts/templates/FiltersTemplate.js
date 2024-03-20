@@ -1,13 +1,8 @@
-import { recipes } from "../../recipes.js";
-
-export class FilterTemplateClass {
+export class FiltersTemplate {
   constructor() {
     this.filtersSection = document.getElementsByClassName("filters-section")[0];
     this.numberOfRecipes = document.getElementsByClassName("numbers-recipes")[0];
-    this.inputSearchFilterCategory = document.getElementsByClassName("search-input-filter");
-    this.filterCategories = document.getElementsByClassName("filter-category");
     this.filteredItems = null;
-    this.recipes = recipes;
   }
 
   /**
@@ -72,7 +67,7 @@ export class FilterTemplateClass {
    * @returns the template for a filter
    */
 
-  filtersTemplate = (filterName, filtersElements) => {
+  filtersTemplate = (filterName, filtersElements, filteredItems) => {
     this.filtersSection.innerHTML += `<div class="filter-wrapper absolute flex z-10 flex-col bg-white p-4 h-fit rounded-xl w-56 overflow-y-auto top-[690px]">
       <div class="flex justify-between w-48">
         <p class="m-0 filter-category">${filterName}</p>
@@ -82,15 +77,16 @@ export class FilterTemplateClass {
         <input class="search-input-filter border border-style:solid mb-6 mt-4 p-3" type="search">
         <img class="absolute right-3 top-8" src="./assets/search-grey-icon.svg" alt="search icon">
         <div class="js-filters-items-wrapper--${filterName}">
-          ${this.getFilteredItems(filtersElements, filterName)}
+          ${this.getFilteredItems(filtersElements, filterName, filteredItems)}
         </div>
       </div>
     </div>
    `;
   };
 
-  getFilteredItems = (filtersElements, filterName) => {
+  getFilteredItems = (filtersElements, filterName, filteredItems) => {
     let recipesFilterValues = "";
+    this.filteredItems = filteredItems;
 
     // join filters values to the wrapper using the filtersElements array
     if (this.filteredItems) {
@@ -102,7 +98,6 @@ export class FilterTemplateClass {
         "display"
       ].join("")}</div>`;
     }
-
     return recipesFilterValues;
   };
 
@@ -154,46 +149,5 @@ export class FilterTemplateClass {
 
   displayNumberOfRecipes = (recipes) => {
     this.numberOfRecipes.textContent = `${recipes.length} recettes`;
-  };
-
-  /**
-   * method that contains the filter search algorithm
-   * @param {{object}} arrayOfFiltersItems - list of all filters items
-   * @returns {void}
-   */
-
-  onChangeUpdateFiltersItems = (arrayOfFiltersItems, searchByItemsFilters = () => {}) => {
-    for (let i = 0; i < this.inputSearchFilterCategory.length; i++) {
-      this.inputSearchFilterCategory[i].addEventListener("input", (event) => {
-        event.preventDefault();
-        const inputValue = event.target.value;
-        const choosenCategory = this.filterCategories[i].innerHTML;
-        const filteredItems = arrayOfFiltersItems[choosenCategory]["filtersItems"];
-
-        const choosenFilter = document.getElementsByClassName(
-          `js-filters-items-wrapper--${choosenCategory}`
-        )[0];
-
-        if (inputValue) {
-          const matchingFilterItems = [];
-          for (let j = 0; j < filteredItems.length; j++) {
-            const matchingFiltersValue = filteredItems[j]
-              .toLowerCase()
-              .match(inputValue.toLowerCase());
-
-            if (matchingFiltersValue && !matchingFilterItems.includes(filteredItems[j])) {
-              matchingFilterItems.push(filteredItems[j]);
-            }
-          }
-          this.filteredItems = matchingFilterItems;
-          searchByItemsFilters(matchingFilterItems, choosenCategory);
-          choosenFilter.innerHTML = this.getFilteredItems(matchingFilterItems, choosenCategory);
-        } else {
-          this.filteredItems = null;
-          const filtersElements = this.getFiltersItems(this.recipes);
-          choosenFilter.innerHTML = this.getFilteredItems(filtersElements, choosenCategory);
-        }
-      });
-    }
   };
 }

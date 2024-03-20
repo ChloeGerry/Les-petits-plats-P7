@@ -1,14 +1,16 @@
-import { FilterTemplateClass } from "../templates/filterRecipesClass.js";
-import { RecipeTemplateClass } from "../templates/recipeTemplateClass.js";
+import { FiltersTemplate } from "../templates/FiltersTemplate.js";
+import { RecipesTemplate } from "../templates/RecipesTemplate.js";
+import { SearchFiltersTags } from "./SearchFiltersTags.js";
 
-export class SearchRecipeClass {
+export class SearchRecipes {
   constructor() {
     this.searchInput = document.getElementsByClassName("search-input")[0];
     this.deleteSearchIcon = document.getElementsByClassName("search-input-reset-icon")[0];
     this.recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
     this.errorMessage = document.getElementsByClassName("error-message")[0];
-    this.recipeTemplate = new RecipeTemplateClass();
-    this.filterTemplate = new FilterTemplateClass();
+    this.recipesTemplate = new RecipesTemplate();
+    this.filtersTemplate = new FiltersTemplate();
+    this.searchFiltersTags = new SearchFiltersTags();
     this.filteredItems = null;
   }
 
@@ -19,10 +21,10 @@ export class SearchRecipeClass {
    */
 
   searchRecipeAlgorithmTemplate = (recipes) => {
-    const filtersElements = this.filterTemplate.getFiltersItems(recipes);
-    this.filterTemplate.onChangeUpdateFiltersItems(filtersElements, (matchingFilterItems) => {
+    const filtersElements = this.filtersTemplate.getFiltersItems(recipes);
+
+    this.searchFiltersTags.onChangeUpdateFiltersItems(filtersElements, (matchingFilterItems) => {
       this.filteredItems = matchingFilterItems;
-      console.log("this.filteredItems", this.filteredItems);
       return this.filteredItems;
     });
 
@@ -35,9 +37,9 @@ export class SearchRecipeClass {
       if (!inputValue) {
         this.errorMessage.style.visibility = "hidden";
         this.deleteSearchIcon.style.visibility = "hidden";
-        this.filterTemplate.displayNumberOfRecipes(recipes);
+        this.filtersTemplate.displayNumberOfRecipes(recipes);
         recipes.forEach(
-          (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
+          (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
         );
 
         this.recipesWrapper.innerHTML = displayMatchingRecipes;
@@ -57,9 +59,9 @@ export class SearchRecipeClass {
           this.errorMessage.style.visibility = "hidden";
           event.target.value = "";
 
-          this.filterTemplate.displayNumberOfRecipes(recipes);
+          this.filtersTemplate.displayNumberOfRecipes(recipes);
           recipes.forEach(
-            (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
+            (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
           );
 
           this.recipesWrapper.innerHTML = displayMatchingRecipes;
@@ -73,9 +75,9 @@ export class SearchRecipeClass {
         }
 
         arrayRecipe.forEach(
-          (recipe) => (displayMatchingRecipes += this.recipeTemplate.getRecipeCard(recipe))
+          (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
         );
-        this.filterTemplate.displayNumberOfRecipes(arrayRecipe);
+        this.filtersTemplate.displayNumberOfRecipes(arrayRecipe);
         this.recipesWrapper.innerHTML = displayMatchingRecipes;
       }
     });

@@ -1,36 +1,36 @@
 import { recipes } from "../../recipes.js";
-import { FilterTemplateClass } from "../templates/filterRecipesClass.js";
-import { RecipeTemplateClass } from "../templates/recipeTemplateClass.js";
+import { FiltersTemplate } from "../templates/FiltersTemplate.js";
+import { RecipesTemplate } from "../templates/RecipesTemplate.js";
 import { APPLIANCES, INGREDIENTS, USTENSILS } from "../utils/constants.js";
-import { SearchRecipeClass } from "../utils/searchRecipeClass.js";
+import { SearchRecipes } from "../utils/SearchRecipes.js";
 
 const displayRecipesCards = () => {
   console.log("recipes", recipes);
   const recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
-  const recipeTemplate = new RecipeTemplateClass();
+  const recipesTemplate = new RecipesTemplate();
   let recipesToAdd = "";
 
-  recipes.map((recipe) => (recipesToAdd += recipeTemplate.getRecipeCard(recipe)));
+  recipes.map((recipe) => (recipesToAdd += recipesTemplate.getRecipeCard(recipe)));
   recipesWrapper.innerHTML = recipesToAdd;
 };
 
 const filterRecipes = () => {
   const filtersCategories = [INGREDIENTS, APPLIANCES, USTENSILS];
-  const filterTemplate = new FilterTemplateClass();
+  const filtersTemplate = new FiltersTemplate();
 
-  const filtersElements = filterTemplate.getFiltersItems(recipes);
+  const filtersElements = filtersTemplate.getFiltersItems(recipes);
   filtersCategories.map((filterCategory) =>
-    filterTemplate.filtersTemplate(filterCategory, filtersElements)
+    filtersTemplate.filtersTemplate(filterCategory, filtersElements, null)
   );
 
-  filterTemplate.displayNumberOfRecipes(recipes);
-  filterTemplate.handleFilterValuesDisplay();
+  filtersTemplate.displayNumberOfRecipes(recipes);
+  filtersTemplate.handleFilterValuesDisplay();
 };
 
 const init = () => {
   filterRecipes();
   displayRecipesCards();
-  const search = new SearchRecipeClass();
+  const search = new SearchRecipes();
   search.searchRecipeAlgorithmTemplate(recipes);
 };
 
