@@ -18,8 +18,9 @@ const filterRecipes = () => {
   const filtersCategories = [INGREDIENTS, APPLIANCES, USTENSILS];
   const filterTemplate = new FilterTemplateClass();
 
+  const filtersElements = filterTemplate.getFiltersItems(recipes);
   filtersCategories.map((filterCategory) =>
-    filterTemplate.filtersTemplate(filterCategory, recipes)
+    filterTemplate.filtersTemplate(filterCategory, filtersElements)
   );
 
   filterTemplate.displayNumberOfRecipes(recipes);

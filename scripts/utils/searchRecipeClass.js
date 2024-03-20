@@ -9,7 +9,7 @@ export class SearchRecipeClass {
     this.errorMessage = document.getElementsByClassName("error-message")[0];
     this.recipeTemplate = new RecipeTemplateClass();
     this.filterTemplate = new FilterTemplateClass();
-    this.filtersItems = null;
+    this.filteredItems = null;
   }
 
   /**
@@ -20,11 +20,11 @@ export class SearchRecipeClass {
 
   searchRecipeAlgorithmTemplate = (recipes) => {
     const filtersElements = this.filterTemplate.getFiltersItems(recipes);
-    this.filterTemplate.onChangeUpdateFiltersItems(
-      filtersElements,
-      (matchingFiltersItems) => (this.filtersItems = matchingFiltersItems)
-    );
-    const chloe = "’coucou’";
+    this.filterTemplate.onChangeUpdateFiltersItems(filtersElements, (matchingFilterItems) => {
+      this.filteredItems = matchingFilterItems;
+      console.log("this.filteredItems", this.filteredItems);
+      return this.filteredItems;
+    });
 
     this.searchInput.addEventListener("input", (event) => {
       event.preventDefault();
@@ -66,7 +66,6 @@ export class SearchRecipeClass {
         });
 
         const arrayRecipe = this.searchRecipeAlgorithm(recipes, inputValue, matchingRecipes);
-        console.log("this.filtersItems", this.filtersItems);
 
         if (!arrayRecipe || arrayRecipe.length === 0) {
           this.errorMessage.style.visibility = "visible";
@@ -109,7 +108,6 @@ export class SearchRecipeClass {
         }
       }
     }
-    console.log("matchingRecipes", matchingRecipes);
     return matchingRecipes;
   };
 }
