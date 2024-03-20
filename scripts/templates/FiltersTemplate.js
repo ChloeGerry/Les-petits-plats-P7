@@ -1,9 +1,8 @@
-export class FilterTemplateClass {
+export class FiltersTemplate {
   constructor() {
     this.filtersSection = document.getElementsByClassName("filters-section")[0];
     this.numberOfRecipes = document.getElementsByClassName("numbers-recipes")[0];
-    this.inputSearchFilterCategory = document.getElementsByClassName("search-input-filter");
-    this.filterCategories = document.getElementsByClassName("filter-category");
+    this.filteredItems = null;
   }
 
   /**
@@ -35,26 +34,31 @@ export class FilterTemplateClass {
       (recipe) => !appliances.includes(recipe.appliance) && appliances.push(recipe.appliance)
     );
 
-    // create a function to map filters values
-    const displayFiltersValues = (filterElements) =>
-      filterElements.map((element) => `<p class="text-sm font-normal m-0">${element}</p>`);
-
     const filtersElements = {
       Ingrédients: {
-        display: displayFiltersValues(ingredients),
+        display: this.displayFiltersValues(ingredients),
         filtersItems: ingredients,
       },
       Appareils: {
-        display: displayFiltersValues(appliances),
+        display: this.displayFiltersValues(appliances),
         filtersItems: appliances,
       },
       Ustensiles: {
-        display: displayFiltersValues(ustensils),
+        display: this.displayFiltersValues(ustensils),
         filtersItems: ustensils,
       },
     };
     return filtersElements;
   };
+
+  /**
+   * method to map filters values
+   * @param {[string]} filterElements - list of all filters elements
+   * @returns the template for each filter elements
+   */
+
+  displayFiltersValues = (filterElements) =>
+    filterElements.map((element) => `<p class="text-sm font-normal m-0">${element}</p>`);
 
   /**
    * method to fill the filters values
@@ -63,17 +67,8 @@ export class FilterTemplateClass {
    * @returns the template for a filter
    */
 
-  filtersTemplate = (filterName, recipes) => {
-    let recipesFilterValues = "";
-
-    const filtersElements = this.getFiltersItems(recipes);
-
-    // join filters values to the wrapper using the filtersElements array
-    recipesFilterValues = `<div class="flex flex-col gap-3">${filtersElements[filterName][
-      "display"
-    ].join("")}</div>`;
-
-    this.filtersSection.innerHTML += `<div class="filter-wrapper absolute flex z-10 flex-col bg-white p-4 h-fit rounded-xl w-56 overflow-y-hidden top-[690px]">
+  filtersTemplate = (filterName, filtersElements, filteredItems) => {
+    this.filtersSection.innerHTML += `<div class="filter-wrapper absolute flex z-10 flex-col bg-white p-4 h-fit rounded-xl w-56 overflow-y-auto top-[690px]">
       <div class="flex justify-between w-48">
         <p class="m-0 filter-category">${filterName}</p>
         <img class="arrow-icon cursor-pointer" src="./assets/arrow.svg" alt="arrow icon">
@@ -81,10 +76,29 @@ export class FilterTemplateClass {
       <div class="filter-search-wrapper flex-col relative hidden">
         <input class="search-input-filter border border-style:solid mb-6 mt-4 p-3" type="search">
         <img class="absolute right-3 top-8" src="./assets/search-grey-icon.svg" alt="search icon">
-        ${recipesFilterValues}
+        <div class="js-filters-items-wrapper--${filterName}">
+          ${this.getFilteredItems(filtersElements, filterName, filteredItems)}
+        </div>
       </div>
     </div>
    `;
+  };
+
+  getFilteredItems = (filtersElements, filterName, filteredItems) => {
+    let recipesFilterValues = "";
+    this.filteredItems = filteredItems;
+
+    // join filters values to the wrapper using the filtersElements array
+    if (this.filteredItems) {
+      recipesFilterValues = `<div class="flex flex-col gap-3">
+      ${this.displayFiltersValues(filtersElements).join("")}
+      </div>`;
+    } else {
+      recipesFilterValues = `<div class="flex flex-col gap-3">${filtersElements[filterName][
+        "display"
+      ].join("")}</div>`;
+    }
+    return recipesFilterValues;
   };
 
   /**
@@ -135,19 +149,5 @@ export class FilterTemplateClass {
 
   displayNumberOfRecipes = (recipes) => {
     this.numberOfRecipes.textContent = `${recipes.length} recettes`;
-  };
-
-  /**
-   * method that contains the filter search algorithm
-   * @param {{object}} arrayOfFiltersItems - list of all filters items
-   * @returns the list of all matching filters values with the filter search input
-   */
-
-  searchByItemsFilters = (arrayOfFiltersItems) => {
-    const matchingFiltersItems = [];
-
-    // add algorith for filter search
-
-    return matchingFiltersItems;
   };
 }
