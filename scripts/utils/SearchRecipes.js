@@ -88,7 +88,7 @@ export class SearchRecipes {
    * @param {[object]} recipes - list of all recipes
    * @param {string} inputValue - value of the input search
    * @param {[object]} matchingRecipes - list of recipes matching the input search
-   * @returns the list of the matching recipes
+   * @returns {[string]} the list of the matching recipes
    */
 
   searchRecipeAlgorithm = (recipes, inputValue, matchingRecipes) => {

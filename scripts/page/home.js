@@ -20,7 +20,7 @@ const filterRecipes = () => {
 
   const filtersElements = filtersTemplate.getFiltersItems(recipes);
   filtersCategories.map((filterCategory) =>
-    filtersTemplate.filtersTemplate(filterCategory, filtersElements, null)
+    filtersTemplate.displayFiltersValues(filterCategory, filtersElements, null)
   );
 
   filtersTemplate.displayNumberOfRecipes(recipes);

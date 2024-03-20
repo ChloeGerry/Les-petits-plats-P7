@@ -8,7 +8,9 @@ export class FiltersTemplate {
   /**
    * method to get all the filters items
    * @param {[object]} recipes - list of all recipes
-   * @returns the object that contains all filters items and can display them
+   * @returns {{Ingrédients: { ([string]) => {} }, filtersItems: [string]},
+   * {Appareils: { ([string]) => {} }, filtersItems: [string]},
+   * {Ustensiles: { ([string]) => {} }, filtersItems: [string]}} the object that contains all filters items and can display them
    */
 
   getFiltersItems = (recipes) => {
@@ -36,15 +38,15 @@ export class FiltersTemplate {
 
     const filtersElements = {
       Ingrédients: {
-        display: this.displayFiltersValues(ingredients),
+        display: this.filtersTemplate(ingredients),
         filtersItems: ingredients,
       },
       Appareils: {
-        display: this.displayFiltersValues(appliances),
+        display: this.filtersTemplate(appliances),
         filtersItems: appliances,
       },
       Ustensiles: {
-        display: this.displayFiltersValues(ustensils),
+        display: this.filtersTemplate(ustensils),
         filtersItems: ustensils,
       },
     };
@@ -57,17 +59,18 @@ export class FiltersTemplate {
    * @returns the template for each filter elements
    */
 
-  displayFiltersValues = (filterElements) =>
+  filtersTemplate = (filterElements) =>
     filterElements.map((element) => `<p class="text-sm font-normal m-0">${element}</p>`);
 
   /**
    * method to fill the filters values
    * @param {[string]} filterName - list of all filters categories
    * @param {[object]} recipes - list of all recipes
-   * @returns the template for a filter
+   * @param {[string]} filteredItems - list of all recipes
+   * @returns display the filters wrapper
    */
 
-  filtersTemplate = (filterName, filtersElements, filteredItems) => {
+  displayFiltersValues = (filterName, filtersElements, filteredItems) => {
     this.filtersSection.innerHTML += `<div class="filter-wrapper absolute flex z-10 flex-col bg-white p-4 h-fit rounded-xl w-56 overflow-y-auto top-[690px]">
       <div class="flex justify-between w-48">
         <p class="m-0 filter-category">${filterName}</p>
@@ -91,7 +94,7 @@ export class FiltersTemplate {
     // join filters values to the wrapper using the filtersElements array
     if (this.filteredItems) {
       recipesFilterValues = `<div class="flex flex-col gap-3">
-      ${this.displayFiltersValues(filtersElements).join("")}
+      ${this.filtersTemplate(filtersElements).join("")}
       </div>`;
     } else {
       recipesFilterValues = `<div class="flex flex-col gap-3">${filtersElements[filterName][

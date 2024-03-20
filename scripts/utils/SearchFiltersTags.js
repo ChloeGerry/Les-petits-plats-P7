@@ -13,7 +13,7 @@ export class SearchFiltersTags {
   /**
    * method that search tags in filters
    * @param {{object}} arrayOfFiltersItems - list of all filters items
-   * @returns the list of all matching values with the filter search input
+   * @returns {[string]} the list of all matching values with the filter search input
    */
 
   onChangeUpdateFiltersItems = (arrayOfFiltersItems, searchByItemsFilters = () => {}) => {
