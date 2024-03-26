@@ -1,8 +1,8 @@
 import { recipes } from "../../recipes.js";
 import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 import { RecipesTemplate } from "../templates/RecipesTemplate.js";
-import { APPLIANCES, INGREDIENTS, USTENSILS } from "../utils/constants.js";
 import { SearchRecipes } from "../utils/SearchRecipes.js";
+import { APPLIANCES, INGREDIENTS, USTENSILS } from "../utils/constants.js";
 
 const displayRecipesCards = () => {
   console.log("recipes", recipes);
@@ -25,6 +25,8 @@ const filterRecipes = () => {
 
   filtersTemplate.displayNumberOfRecipes(recipes);
   filtersTemplate.handleFilterValuesDisplay();
+  filtersTemplate.handleFiltersTags();
+  filtersTemplate.deleteFiltersTags();
 };
 
 const init = () => {

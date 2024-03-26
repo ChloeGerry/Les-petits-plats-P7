@@ -1,16 +1,18 @@
 import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 import { RecipesTemplate } from "../templates/RecipesTemplate.js";
 import { SearchFiltersTags } from "./SearchFiltersTags.js";
+import { currentChoosenTags } from "./constants.js";
 
 export class SearchRecipes {
   constructor() {
+    this.recipesTemplate = new RecipesTemplate();
+    this.filtersTemplate = new FiltersTemplate();
+    this.searchFiltersTags = new SearchFiltersTags();
     this.searchInput = document.getElementsByClassName("search-input")[0];
     this.deleteSearchIcon = document.getElementsByClassName("search-input-reset-icon")[0];
     this.recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
     this.errorMessage = document.getElementsByClassName("error-message")[0];
-    this.recipesTemplate = new RecipesTemplate();
-    this.filtersTemplate = new FiltersTemplate();
-    this.searchFiltersTags = new SearchFiltersTags();
+    this.filtersTags = document.querySelectorAll(".filters-elements");
     this.filteredItems = null;
   }
 
@@ -25,7 +27,6 @@ export class SearchRecipes {
 
     this.searchFiltersTags.onChangeUpdateFiltersItems(filtersElements, (matchingFilterItems) => {
       this.filteredItems = matchingFilterItems;
-      return this.filteredItems;
     });
 
     this.searchInput.addEventListener("input", (event) => {
@@ -33,6 +34,9 @@ export class SearchRecipes {
       let inputValue = event.target.value;
       const matchingRecipes = [];
       let displayMatchingRecipes = "";
+
+      console.log("currentChoosenTags search", currentChoosenTags);
+      this.filtersTemplate.deleteFiltersTags();
 
       if (!inputValue) {
         this.errorMessage.style.visibility = "hidden";

@@ -1,6 +1,9 @@
+import { currentChoosenTags } from "../utils/constants.js";
+
 export class FiltersTemplate {
   constructor() {
     this.filtersSection = document.getElementsByClassName("filters-section")[0];
+    this.tagsWrapper = document.getElementsByClassName("tags-wrapper")[0];
     this.numberOfRecipes = document.getElementsByClassName("numbers-recipes")[0];
     this.filteredItems = null;
   }
@@ -60,7 +63,10 @@ export class FiltersTemplate {
    */
 
   filtersTemplate = (filterElements) =>
-    filterElements.map((element) => `<p class="text-sm font-normal m-0">${element}</p>`);
+    filterElements.map(
+      (element) =>
+        `<p class="filters-elements text-sm font-normal m-0 cursor-pointer">${element}</p>`
+    );
 
   /**
    * method to fill the filters values
@@ -93,7 +99,7 @@ export class FiltersTemplate {
 
     // join filters values to the wrapper using the filtersElements array
     if (this.filteredItems) {
-      recipesFilterValues = `<div class="flex flex-col gap-3">
+      recipesFilterValues = `<div class="filter-items-wrapper flex flex-col gap-3">
       ${this.filtersTemplate(filtersElements).join("")}
       </div>`;
     } else {
@@ -114,9 +120,9 @@ export class FiltersTemplate {
     let isFilterOpen = false;
 
     const filterWrapperAppliances = document.getElementsByClassName("filter-wrapper")[1];
-    filterWrapperAppliances.style.left = "370px";
+    filterWrapperAppliances.style.left = "385px";
     const filterWrapperUstensils = document.getElementsByClassName("filter-wrapper")[2];
-    filterWrapperUstensils.style.left = "640px";
+    filterWrapperUstensils.style.left = "675px";
 
     for (let i = 0; i < arrowsIcons.length; i++) {
       arrowsIcons[i].addEventListener("click", () => {
@@ -137,11 +143,36 @@ export class FiltersTemplate {
     }
   };
 
-  filterItems = () => {
-    this.filtersSection.innerHTML += `<div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between">
-    <p class="text-sm font-normal">Coco</p>
-    <img src="./assets/remove-icon.svg" alt="cross icon">
-  </div>`;
+  filtersTagsTemplate = (choosenTag, choosenTags) => {
+    if (!choosenTags.includes(choosenTag)) {
+      choosenTags.push(choosenTag);
+      this.tagsWrapper.style.display = "flex";
+      this.tagsWrapper.style.flexWrap = "wrap";
+      this.tagsWrapper.innerHTML += `<div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between"><p class="text-sm font-normal">${choosenTag}</p>
+      <img class="remove-tag-icon cursor-pointer" src="./assets/remove-icon.svg" alt="cross icon"></div>`;
+    }
+  };
+
+  handleFiltersTags = () => {
+    const filtersTags = document.querySelectorAll(".filters-elements");
+
+    filtersTags.forEach((filterTag) => {
+      filterTag.addEventListener("click", (event) => {
+        const choosenTag = event.target.innerText;
+        this.filtersTagsTemplate(choosenTag, currentChoosenTags);
+      });
+    });
+  };
+
+  deleteFiltersTags = () => {
+    const deleteTagsIcons = document.querySelectorAll(".remove-tag-icon");
+    console.log("deleteTagsIcons", deleteTagsIcons);
+
+    deleteTagsIcons.forEach((deleteIcon, index) => {
+      deleteIcon.addEventListener("click", () => {
+        console.log("deleteIcon", deleteIcon);
+      });
+    });
   };
 
   /**
