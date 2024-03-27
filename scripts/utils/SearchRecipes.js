@@ -1,7 +1,6 @@
 import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 import { RecipesTemplate } from "../templates/RecipesTemplate.js";
 import { SearchFiltersTags } from "./SearchFiltersTags.js";
-import { currentChoosenTags } from "./constants.js";
 
 export class SearchRecipes {
   constructor() {
@@ -25,17 +24,16 @@ export class SearchRecipes {
   searchRecipeAlgorithmTemplate = (recipes) => {
     const filtersElements = this.filtersTemplate.getFiltersItems(recipes);
 
-    this.searchFiltersTags.onChangeUpdateFiltersItems(filtersElements, (matchingFilterItems) => {
-      matchingFilterItems;
-    });
+    this.searchFiltersTags.onChangeUpdateFiltersItems(
+      filtersElements,
+      (matchingFilterItems) => matchingFilterItems
+    );
 
     this.searchInput.addEventListener("input", (event) => {
       event.preventDefault();
       let inputValue = event.target.value;
       const matchingRecipes = [];
       let displayMatchingRecipes = "";
-
-      this.filtersTemplate.deleteFiltersTags();
 
       if (!inputValue) {
         this.errorMessage.style.visibility = "hidden";
@@ -121,6 +119,10 @@ export class SearchRecipes {
       let displayMatchingRecipes = "";
       const matchingRecipes = [];
       const arrayRecipe = this.searchRecipeAlgorithm(recipes, currentChoosenTag, matchingRecipes);
+
+      if (!arrayRecipe || arrayRecipe.length === 0) {
+        return (this.recipesWrapper.innerHTML = `<p>Aucune recette ne contient ${currentChoosenTag}, vous pouvez essayer avec un autre filtre</p>`);
+      }
 
       arrayRecipe.forEach(
         (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))

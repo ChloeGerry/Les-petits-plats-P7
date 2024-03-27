@@ -1,11 +1,15 @@
+import { RecipesTemplate } from "./RecipesTemplate.js";
+import { recipes } from "../../recipes.js";
 import { SearchRecipes } from "../utils/SearchRecipes.js";
 import { currentChoosenTags } from "../utils/constants.js";
 
 export class FiltersTemplate {
   constructor() {
+    this.recipesTemplate = new RecipesTemplate();
     this.filtersSection = document.getElementsByClassName("filters-section")[0];
     this.tagsWrapper = document.getElementsByClassName("tags-wrapper")[0];
     this.numberOfRecipes = document.getElementsByClassName("numbers-recipes")[0];
+    this.recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
     this.filteredItems = null;
   }
 
@@ -149,8 +153,8 @@ export class FiltersTemplate {
       choosenTags.push(choosenTag);
       this.tagsWrapper.style.display = "flex";
       this.tagsWrapper.style.flexWrap = "wrap";
-      this.tagsWrapper.innerHTML += `<div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between"><p class="text-sm font-normal">${choosenTag}</p>
-      <img class="remove-tag-icon cursor-pointer" src="./assets/remove-icon.svg" alt="cross icon"></div>`;
+      this.tagsWrapper.innerHTML += `<div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between ${choosenTag}"><p class="text-sm font-normal">${choosenTag}</p>
+      <img data-id="${choosenTag}" class="remove-tag-icon cursor-pointer" src="./assets/remove-icon.svg" alt="cross icon"></div>`;
     }
   };
 
@@ -163,17 +167,33 @@ export class FiltersTemplate {
         this.filtersTagsTemplate(choosenTag, currentChoosenTags);
         const search = new SearchRecipes();
         search.searchRecipeByTags(recipes, choosenTag);
+        this.deleteFiltersTags();
       });
     });
   };
 
   deleteFiltersTags = () => {
     const deleteTagsIcons = document.querySelectorAll(".remove-tag-icon");
-    // console.log("deleteTagsIcons", deleteTagsIcons);
 
     deleteTagsIcons.forEach((deleteIcon, index) => {
       deleteIcon.addEventListener("click", () => {
-        // console.log("deleteIcon", deleteIcon);
+        let displayMatchingRecipes = "";
+        const tagDataId = deleteIcon.dataset.id;
+        const tagToRemove = document.getElementsByClassName(`${tagDataId}`)[0];
+
+        if (tagToRemove) {
+          tagToRemove.remove();
+          currentChoosenTags[index] === tagDataId && currentChoosenTags.splice(index, 1);
+        }
+
+        if (currentChoosenTags.length === 0) {
+          this.displayNumberOfRecipes(recipes);
+          recipes.forEach(
+            (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+          );
+
+          this.recipesWrapper.innerHTML = displayMatchingRecipes;
+        }
       });
     });
   };

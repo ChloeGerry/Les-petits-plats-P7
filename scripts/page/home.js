@@ -26,7 +26,6 @@ const filterRecipes = () => {
   filtersTemplate.displayNumberOfRecipes(recipes);
   filtersTemplate.handleFilterValuesDisplay();
   filtersTemplate.handleFiltersTags(recipes);
-  filtersTemplate.deleteFiltersTags();
 };
 
 const init = () => {
