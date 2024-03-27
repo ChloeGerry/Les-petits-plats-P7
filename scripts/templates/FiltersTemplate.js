@@ -1,3 +1,4 @@
+import { SearchRecipes } from "../utils/SearchRecipes.js";
 import { currentChoosenTags } from "../utils/constants.js";
 
 export class FiltersTemplate {
@@ -153,24 +154,26 @@ export class FiltersTemplate {
     }
   };
 
-  handleFiltersTags = () => {
+  handleFiltersTags = (recipes) => {
     const filtersTags = document.querySelectorAll(".filters-elements");
 
     filtersTags.forEach((filterTag) => {
       filterTag.addEventListener("click", (event) => {
         const choosenTag = event.target.innerText;
         this.filtersTagsTemplate(choosenTag, currentChoosenTags);
+        const search = new SearchRecipes();
+        search.searchRecipeByTags(recipes, choosenTag);
       });
     });
   };
 
   deleteFiltersTags = () => {
     const deleteTagsIcons = document.querySelectorAll(".remove-tag-icon");
-    console.log("deleteTagsIcons", deleteTagsIcons);
+    // console.log("deleteTagsIcons", deleteTagsIcons);
 
     deleteTagsIcons.forEach((deleteIcon, index) => {
       deleteIcon.addEventListener("click", () => {
-        console.log("deleteIcon", deleteIcon);
+        // console.log("deleteIcon", deleteIcon);
       });
     });
   };

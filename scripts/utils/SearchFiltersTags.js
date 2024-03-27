@@ -47,7 +47,7 @@ export class SearchFiltersTags {
             this.filteredItems
           );
 
-          this.filtersTemplate.handleFiltersTags();
+          this.filtersTemplate.handleFiltersTags(recipes);
         } else {
           this.filteredItems = null;
           const filtersElements = this.filtersTemplate.getFiltersItems(this.recipes);

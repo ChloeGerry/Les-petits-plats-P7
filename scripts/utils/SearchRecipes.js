@@ -26,7 +26,7 @@ export class SearchRecipes {
     const filtersElements = this.filtersTemplate.getFiltersItems(recipes);
 
     this.searchFiltersTags.onChangeUpdateFiltersItems(filtersElements, (matchingFilterItems) => {
-      this.filteredItems = matchingFilterItems;
+      matchingFilterItems;
     });
 
     this.searchInput.addEventListener("input", (event) => {
@@ -35,7 +35,6 @@ export class SearchRecipes {
       const matchingRecipes = [];
       let displayMatchingRecipes = "";
 
-      console.log("currentChoosenTags search", currentChoosenTags);
       this.filtersTemplate.deleteFiltersTags();
 
       if (!inputValue) {
@@ -115,5 +114,19 @@ export class SearchRecipes {
       }
     }
     return matchingRecipes;
+  };
+
+  searchRecipeByTags = (recipes, currentChoosenTag) => {
+    if (currentChoosenTag) {
+      let displayMatchingRecipes = "";
+      const matchingRecipes = [];
+      const arrayRecipe = this.searchRecipeAlgorithm(recipes, currentChoosenTag, matchingRecipes);
+
+      arrayRecipe.forEach(
+        (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+      );
+      this.filtersTemplate.displayNumberOfRecipes(arrayRecipe);
+      this.recipesWrapper.innerHTML = displayMatchingRecipes;
+    }
   };
 }

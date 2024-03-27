@@ -25,13 +25,14 @@ const filterRecipes = () => {
 
   filtersTemplate.displayNumberOfRecipes(recipes);
   filtersTemplate.handleFilterValuesDisplay();
-  filtersTemplate.handleFiltersTags();
+  filtersTemplate.handleFiltersTags(recipes);
   filtersTemplate.deleteFiltersTags();
 };
 
 const init = () => {
   filterRecipes();
   displayRecipesCards();
+
   const search = new SearchRecipes();
   search.searchRecipeAlgorithmTemplate(recipes);
 };
