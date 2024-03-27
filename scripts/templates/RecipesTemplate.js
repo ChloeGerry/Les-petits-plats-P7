@@ -1,6 +1,4 @@
 export class RecipesTemplate {
-  constructor() {}
-
   getRecipeCard(recipe) {
     const { name, ingredients, description, image, time } = recipe;
     const picturePath = `./assets/images/${image}`;
