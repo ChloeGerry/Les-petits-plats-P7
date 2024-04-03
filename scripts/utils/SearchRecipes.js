@@ -1,6 +1,7 @@
 import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 import { RecipesTemplate } from "../templates/RecipesTemplate.js";
 import { SearchFiltersTags } from "./SearchFiltersTags.js";
+import { currentChoosenTags, filteredItems } from "./constants.js";
 
 export class SearchRecipes {
   constructor() {
@@ -70,16 +71,33 @@ export class SearchRecipes {
 
         const arrayRecipe = this.searchRecipeAlgorithm(recipes, inputValue, matchingRecipes);
 
-        if (!arrayRecipe || arrayRecipe.length === 0) {
-          this.errorMessage.style.visibility = "visible";
-          this.errorMessage.textContent = `Aucune recette ne contient ${inputValue}, vous pouvez chercher 'tarte aux pommes' ou 'chocolat' par exemple`;
-        }
+        if (currentChoosenTags.length > 0) {
+          const filteredRecipes = this.crossSearchRecipe(arrayRecipe);
 
-        arrayRecipe.forEach(
-          (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
-        );
-        this.filtersTemplate.displayNumberOfRecipes(arrayRecipe);
-        this.recipesWrapper.innerHTML = displayMatchingRecipes;
+          if (!filteredRecipes || filteredRecipes.length === 0) {
+            for (let i = 0; i < currentChoosenTags.length; i++) {
+              this.errorMessage.style.visibility = "visible";
+              this.errorMessage.textContent = `Aucune recette ne contient ${inputValue} et ${currentChoosenTags[i]}`;
+            }
+          }
+
+          filteredRecipes.forEach(
+            (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+          );
+          this.filtersTemplate.displayNumberOfRecipes(filteredRecipes);
+          this.recipesWrapper.innerHTML = displayMatchingRecipes;
+        } else {
+          if (!arrayRecipe || arrayRecipe.length === 0) {
+            this.errorMessage.style.visibility = "visible";
+            this.errorMessage.textContent = `Aucune recette ne contient ${inputValue}, vous pouvez chercher 'tarte aux pommes' ou 'chocolat' par exemple`;
+          }
+
+          arrayRecipe.forEach(
+            (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+          );
+          this.filtersTemplate.displayNumberOfRecipes(arrayRecipe);
+          this.recipesWrapper.innerHTML = displayMatchingRecipes;
+        }
       }
     });
   };
@@ -115,13 +133,30 @@ export class SearchRecipes {
   };
 
   searchRecipeByTags = (recipes, currentChoosenTag) => {
-    if (currentChoosenTag) {
-      let displayMatchingRecipes = "";
-      const matchingRecipes = [];
+    let displayMatchingRecipes = "";
+    let matchingRecipes = [];
+    if (currentChoosenTags.length > 1) {
+      const updatedArrayRecipe = this.searchRecipeAlgorithm(
+        filteredItems[0],
+        currentChoosenTag,
+        matchingRecipes
+      );
+
+      if (!updatedArrayRecipe || updatedArrayRecipe.length === 0) {
+        return (this.recipesWrapper.innerHTML = `<p>Aucune recette ne contient ${currentChoosenTag}, vous pouvez essayer avec un autre filtre</p>`);
+      }
+
+      updatedArrayRecipe.forEach(
+        (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+      );
+      this.filtersTemplate.displayNumberOfRecipes(updatedArrayRecipe);
+      this.recipesWrapper.innerHTML = displayMatchingRecipes;
+    } else {
       const arrayRecipe = this.searchRecipeAlgorithm(recipes, currentChoosenTag, matchingRecipes);
+      filteredItems.push(arrayRecipe);
 
       if (!arrayRecipe || arrayRecipe.length === 0) {
-        return (this.recipesWrapper.innerHTML = `<p>Aucune recette ne contient ${currentChoosenTag}, vous pouvez essayer avec un autre filtre</p>`);
+        return (this.recipesWrapper.innerHTML = `<p>Aucune recette ne contient les filtres sélectionnés, vous pouvez essayer avec un autre filtre</p>`);
       }
 
       arrayRecipe.forEach(
@@ -129,6 +164,19 @@ export class SearchRecipes {
       );
       this.filtersTemplate.displayNumberOfRecipes(arrayRecipe);
       this.recipesWrapper.innerHTML = displayMatchingRecipes;
+    }
+  };
+
+  crossSearchRecipe = (arrayRecipe) => {
+    const matchingRecipes = [];
+
+    for (let tag = 0; tag < currentChoosenTags.length; tag++) {
+      const filteredRecipes = this.searchRecipeAlgorithm(
+        arrayRecipe,
+        currentChoosenTags[tag],
+        matchingRecipes
+      );
+      return filteredRecipes;
     }
   };
 }

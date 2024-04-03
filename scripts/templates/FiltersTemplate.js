@@ -184,15 +184,19 @@ export class FiltersTemplate {
         if (tagToRemove) {
           tagToRemove.remove();
           currentChoosenTags[index] === tagDataId && currentChoosenTags.splice(index, 1);
-        }
 
-        if (currentChoosenTags.length === 0) {
-          this.displayNumberOfRecipes(recipes);
-          recipes.forEach(
-            (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
-          );
+          if (currentChoosenTags.length === 0) {
+            this.displayNumberOfRecipes(recipes);
+            recipes.forEach(
+              (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+            );
 
-          this.recipesWrapper.innerHTML = displayMatchingRecipes;
+            this.recipesWrapper.innerHTML = displayMatchingRecipes;
+          } else {
+            const lastChoosenTag = currentChoosenTags[currentChoosenTags.length - 1];
+            const search = new SearchRecipes();
+            search.searchRecipeByTags(recipes, lastChoosenTag);
+          }
         }
       });
     });
@@ -205,6 +209,8 @@ export class FiltersTemplate {
    */
 
   displayNumberOfRecipes = (recipes) => {
-    this.numberOfRecipes.textContent = `${recipes.length} recettes`;
+    this.numberOfRecipes.textContent = `${recipes.length} ${
+      recipes.length > 1 ? "recettes" : "recette"
+    }`;
   };
 }
