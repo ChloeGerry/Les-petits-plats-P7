@@ -226,7 +226,7 @@ export class FiltersTemplate {
               updatedArrayRecipe.forEach(
                 (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
               );
-              this.filtersTemplate.displayNumberOfRecipes(updatedArrayRecipe);
+              this.displayNumberOfRecipes(updatedArrayRecipe);
               this.recipesWrapper.innerHTML = displayMatchingRecipes;
             }
           } else {

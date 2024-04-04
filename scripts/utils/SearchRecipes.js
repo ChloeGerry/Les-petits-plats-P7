@@ -55,7 +55,6 @@ export class SearchRecipes {
       if (inputValue.length > 2) {
         this.errorMessage.style.visibility = "hidden";
         this.deleteSearchIcon.style.visibility = "visible";
-        filteredItems.splice(0, filteredItems.length);
 
         this.deleteSearchIcon.addEventListener("click", () => {
           this.deleteSearchIcon.style.visibility = "hidden";
@@ -64,30 +63,36 @@ export class SearchRecipes {
 
           searchInput.splice(0, searchInput.length);
 
-          this.filtersTemplate.displayNumberOfRecipes(recipes);
-          recipes.forEach(
-            (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
-          );
+          if (currentChoosenTags.length > 0) {
+            this.searchRecipeByTags(recipes, currentChoosenTags[0]);
+            for (let index = 1; index < currentChoosenTags.length; index++) {
+              this.searchRecipeByTags(filteredItems[0], currentChoosenTags[index]);
+            }
+          } else {
+            filteredItems.splice(0, filteredItems.length);
 
-          this.recipesWrapper.innerHTML = displayMatchingRecipes;
+            recipes.forEach(
+              (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+            );
+
+            this.filtersTemplate.displayNumberOfRecipes(recipes);
+            this.recipesWrapper.innerHTML = displayMatchingRecipes;
+          }
         });
-
-        const arrayRecipe = this.searchRecipeAlgorithm(recipes, inputValue, matchingRecipes);
-        filteredItems.push(arrayRecipe);
-        searchInput.push(inputValue);
 
         if (currentChoosenTags.length > 0) {
           const filteredRecipes = this.searchRecipeAlgorithm(
-            arrayRecipe,
-            currentChoosenTags,
+            filteredItems[0],
+            inputValue,
             matchingRecipes
           );
 
+          filteredItems.push(filteredRecipes);
+          searchInput.push(inputValue);
+
           if (!filteredRecipes || filteredRecipes.length === 0) {
-            for (let i = 0; i < currentChoosenTags.length; i++) {
-              this.errorMessage.style.visibility = "visible";
-              this.errorMessage.textContent = `Aucune recette ne contient ${inputValue} et ${currentChoosenTags[i]}`;
-            }
+            this.errorMessage.style.visibility = "visible";
+            this.errorMessage.textContent = `Aucune recette ne contient ${inputValue} et les filtres selectionnés`;
           }
 
           filteredRecipes.forEach(
@@ -96,6 +101,10 @@ export class SearchRecipes {
           this.filtersTemplate.displayNumberOfRecipes(filteredRecipes);
           this.recipesWrapper.innerHTML = displayMatchingRecipes;
         } else {
+          const arrayRecipe = this.searchRecipeAlgorithm(recipes, inputValue, matchingRecipes);
+          filteredItems.push(arrayRecipe);
+          searchInput.push(inputValue);
+
           if (!arrayRecipe || arrayRecipe.length === 0) {
             this.errorMessage.style.visibility = "visible";
             this.errorMessage.textContent = `Aucune recette ne contient ${inputValue}, vous pouvez chercher 'tarte aux pommes' ou 'chocolat' par exemple`;
