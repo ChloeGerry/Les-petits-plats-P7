@@ -12,9 +12,10 @@ export class SearchFiltersTags {
   }
 
   /**
-   * method that search tags in filters
-   * @param {{object}} arrayOfFiltersItems - list of all filters items
-   * @returns {[string]} the list of all matching values with the filter search input
+   * Search tags in filters
+   * @param {{object}} arrayOfFiltersItems - All filters items
+   * @param {() => {}} searchByItemsFilters - Execute search by filters item
+   * @returns {[string]} Matching values with filter search input
    */
 
   onChangeUpdateFiltersItems = (arrayOfFiltersItems, searchByItemsFilters = () => {}) => {
@@ -28,6 +29,7 @@ export class SearchFiltersTags {
           `js-filters-items-wrapper--${choosenCategory}`
         )[0];
 
+        // si la recherche est croisée (recherche principale + tag), affichage des recettes qui correspondent
         if (inputValue) {
           const matchingFiltersItems = [];
 
@@ -49,6 +51,7 @@ export class SearchFiltersTags {
 
           this.filtersTemplate.handleFiltersTags(recipes);
         } else {
+          // sinon, la recherche ne contient que des tags => affichage des recettes correspondant au tag choisi
           this.filteredItems = null;
           const filtersElements = this.filtersTemplate.getFiltersItems(this.recipes);
           choosenFilter.innerHTML = this.filtersTemplate.getFilteredItems(

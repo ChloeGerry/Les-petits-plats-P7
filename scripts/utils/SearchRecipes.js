@@ -1,7 +1,7 @@
 import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 import { RecipesTemplate } from "../templates/RecipesTemplate.js";
 import { SearchFiltersTags } from "./SearchFiltersTags.js";
-import { currentChoosenTags, filteredItems } from "./constants.js";
+import { currentChoosenTags, filteredItems, searchInput } from "./constants.js";
 
 export class SearchRecipes {
   constructor() {
@@ -13,13 +13,12 @@ export class SearchRecipes {
     this.recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
     this.errorMessage = document.getElementsByClassName("error-message")[0];
     this.filtersTags = document.querySelectorAll(".filters-elements");
-    this.filteredItems = null;
   }
 
   /**
-   * method to template the main search algorithm
-   * @param {[object]} recipes - list of all recipes
-   * @returns the cards of the matching recipes
+   * Template main search algorithm
+   * @param {[object]} recipes - All recipes
+   * @returns Cards of the matching recipes
    */
 
   searchRecipeAlgorithmTemplate = (recipes) => {
@@ -39,11 +38,12 @@ export class SearchRecipes {
       if (!inputValue) {
         this.errorMessage.style.visibility = "hidden";
         this.deleteSearchIcon.style.visibility = "hidden";
+        filteredItems.splice(0, filteredItems.length);
+
         this.filtersTemplate.displayNumberOfRecipes(recipes);
         recipes.forEach(
           (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
         );
-
         this.recipesWrapper.innerHTML = displayMatchingRecipes;
       }
 
@@ -55,11 +55,14 @@ export class SearchRecipes {
       if (inputValue.length > 2) {
         this.errorMessage.style.visibility = "hidden";
         this.deleteSearchIcon.style.visibility = "visible";
+        filteredItems.splice(0, filteredItems.length);
 
         this.deleteSearchIcon.addEventListener("click", () => {
           this.deleteSearchIcon.style.visibility = "hidden";
           this.errorMessage.style.visibility = "hidden";
           event.target.value = "";
+
+          searchInput.splice(0, searchInput.length);
 
           this.filtersTemplate.displayNumberOfRecipes(recipes);
           recipes.forEach(
@@ -70,9 +73,15 @@ export class SearchRecipes {
         });
 
         const arrayRecipe = this.searchRecipeAlgorithm(recipes, inputValue, matchingRecipes);
+        filteredItems.push(arrayRecipe);
+        searchInput.push(inputValue);
 
         if (currentChoosenTags.length > 0) {
-          const filteredRecipes = this.crossSearchRecipe(arrayRecipe);
+          const filteredRecipes = this.searchRecipeAlgorithm(
+            arrayRecipe,
+            currentChoosenTags,
+            matchingRecipes
+          );
 
           if (!filteredRecipes || filteredRecipes.length === 0) {
             for (let i = 0; i < currentChoosenTags.length; i++) {
@@ -103,11 +112,11 @@ export class SearchRecipes {
   };
 
   /**
-   * method that contains the main search algorithm
-   * @param {[object]} recipes - list of all recipes
-   * @param {string} inputValue - value of the input search
-   * @param {[object]} matchingRecipes - list of recipes matching the input search
-   * @returns {[string]} the list of the matching recipes
+   * Main search algorithm
+   * @param {[object]} recipes - All recipes
+   * @param {string} inputValue - Value of the input search
+   * @param {[object]} matchingRecipes - Recipes matching the input search
+   * @returns {[string]} Matching recipes
    */
 
   searchRecipeAlgorithm = (recipes, inputValue, matchingRecipes) => {
@@ -126,6 +135,7 @@ export class SearchRecipes {
           !matchingRecipes.includes(recipes[i])
         ) {
           matchingRecipes.push(recipes[i]);
+          filteredItems.splice(0, filteredItems.length);
         }
       }
     }
@@ -135,48 +145,26 @@ export class SearchRecipes {
   searchRecipeByTags = (recipes, currentChoosenTag) => {
     let displayMatchingRecipes = "";
     let matchingRecipes = [];
-    if (currentChoosenTags.length > 1) {
-      const updatedArrayRecipe = this.searchRecipeAlgorithm(
-        filteredItems[0],
-        currentChoosenTag,
-        matchingRecipes
-      );
 
-      if (!updatedArrayRecipe || updatedArrayRecipe.length === 0) {
-        return (this.recipesWrapper.innerHTML = `<p>Aucune recette ne contient ${currentChoosenTag}, vous pouvez essayer avec un autre filtre</p>`);
-      }
+    const updatedArrayRecipe = this.searchRecipeAlgorithm(
+      recipes,
+      currentChoosenTag,
+      matchingRecipes
+    );
 
-      updatedArrayRecipe.forEach(
-        (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
-      );
-      this.filtersTemplate.displayNumberOfRecipes(updatedArrayRecipe);
-      this.recipesWrapper.innerHTML = displayMatchingRecipes;
-    } else {
-      const arrayRecipe = this.searchRecipeAlgorithm(recipes, currentChoosenTag, matchingRecipes);
-      filteredItems.push(arrayRecipe);
+    filteredItems.push(updatedArrayRecipe);
 
-      if (!arrayRecipe || arrayRecipe.length === 0) {
-        return (this.recipesWrapper.innerHTML = `<p>Aucune recette ne contient les filtres sélectionnés, vous pouvez essayer avec un autre filtre</p>`);
-      }
-
-      arrayRecipe.forEach(
-        (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
-      );
-      this.filtersTemplate.displayNumberOfRecipes(arrayRecipe);
-      this.recipesWrapper.innerHTML = displayMatchingRecipes;
+    if (updatedArrayRecipe.length === 0) {
+      this.filtersTemplate.displayNumberOfRecipes([]);
+      this.recipesWrapper.innerHTML = `<p>Aucune recette ne contient les filtres sélectionnés, vous pouvez essayer avec un autre filtre</p>`;
+      return;
     }
-  };
 
-  crossSearchRecipe = (arrayRecipe) => {
-    const matchingRecipes = [];
+    updatedArrayRecipe.forEach(
+      (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+    );
 
-    for (let tag = 0; tag < currentChoosenTags.length; tag++) {
-      const filteredRecipes = this.searchRecipeAlgorithm(
-        arrayRecipe,
-        currentChoosenTags[tag],
-        matchingRecipes
-      );
-      return filteredRecipes;
-    }
+    this.filtersTemplate.displayNumberOfRecipes(updatedArrayRecipe);
+    this.recipesWrapper.innerHTML = displayMatchingRecipes;
   };
 }
