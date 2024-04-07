@@ -1,49 +1,46 @@
-import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 import { recipes } from "../../recipes.js";
+import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 
 export class SearchFiltersTags {
   constructor() {
     this.filtersTemplate = new FiltersTemplate();
     this.recipes = recipes;
-    this.inputSearchFilterCategory = document.getElementsByClassName("search-input-filter");
+    this.inputSearchFiltersCategories = document.querySelectorAll(".search-input-filter");
     this.filterCategories = document.getElementsByClassName("filter-category");
+    this.filtersTags = document.querySelectorAll(".filters-elements");
     this.filteredItems = null;
   }
 
   /**
-   * method that search tags in filters
-   * @param {{object}} arrayOfFiltersItems - list of all filters items
-   * @returns the list of all matching values with the filter search input
+   * Search tags in filters
+   * @param {{object}} arrayOfFiltersItems - All filters items
+   * @param {() => {}} searchByItemsFilters - Execute search by filters item
+   * @returns {[string]} Matching recipes with filters tags
    */
 
   onChangeUpdateFiltersItems = (arrayOfFiltersItems, searchByItemsFilters = () => {}) => {
-    for (let i = 0; i < this.inputSearchFilterCategory.length; i++) {
-      this.inputSearchFilterCategory[i].addEventListener("input", (event) => {
+    this.inputSearchFiltersCategories.forEach((inputSearchFilterCategory, index) => {
+      inputSearchFilterCategory.addEventListener("input", (event) => {
         event.preventDefault();
         const inputValue = event.target.value;
-        const choosenCategory = this.filterCategories[i].innerHTML;
+        const choosenCategory = this.filterCategories[index].innerHTML;
         const filteredItems = arrayOfFiltersItems[choosenCategory]["filtersItems"];
-
-        // console.log("filteredItems", filteredItems);
-
         const choosenFilter = document.getElementsByClassName(
           `js-filters-items-wrapper--${choosenCategory}`
         )[0];
 
+        // if there is a crossed search (main search + tag), display recipes matching
         if (inputValue) {
           const matchingFiltersItems = [];
-          for (let j = 0; j < filteredItems.length; j++) {
-            const matchingFiltersValue = filteredItems[j]
-              .toLowerCase()
-              .match(inputValue.toLowerCase());
 
-            if (matchingFiltersValue && !matchingFiltersItems.includes(filteredItems[j])) {
-              matchingFiltersItems.push(filteredItems[j]);
-              if (matchingFiltersValue && !matchingFiltersItems.includes(filteredItems[j])) {
-                matchingFiltersItems.push(filteredItems[j]);
-              }
+          filteredItems.find((filteredItem) => {
+            const matchingFiltersValue = filteredItem.toLowerCase().match(inputValue.toLowerCase());
+
+            if (matchingFiltersValue && !matchingFiltersItems.includes(filteredItem)) {
+              matchingFiltersItems.push(filteredItem);
             }
-          }
+          });
+
           this.filteredItems = matchingFiltersItems;
           searchByItemsFilters(matchingFiltersItems, choosenCategory);
           choosenFilter.innerHTML = this.filtersTemplate.getFilteredItems(
@@ -51,7 +48,10 @@ export class SearchFiltersTags {
             choosenCategory,
             this.filteredItems
           );
+
+          this.filtersTemplate.handleFiltersTags(recipes);
         } else {
+          // else, search is by tags, display recipes matching selected tags
           this.filteredItems = null;
           const filtersElements = this.filtersTemplate.getFiltersItems(this.recipes);
           choosenFilter.innerHTML = this.filtersTemplate.getFilteredItems(
@@ -61,6 +61,6 @@ export class SearchFiltersTags {
           );
         }
       });
-    }
+    });
   };
 }
