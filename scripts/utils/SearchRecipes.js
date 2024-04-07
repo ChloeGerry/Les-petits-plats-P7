@@ -41,6 +41,7 @@ export class SearchRecipes {
         filteredItems.splice(0, filteredItems.length);
 
         this.filtersTemplate.displayNumberOfRecipes(recipes);
+
         recipes.forEach(
           (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
         );
@@ -60,7 +61,6 @@ export class SearchRecipes {
           this.deleteSearchIcon.style.visibility = "hidden";
           this.errorMessage.style.visibility = "hidden";
           event.target.value = "";
-
           searchInput.splice(0, searchInput.length);
 
           if (currentChoosenTags.length > 0) {

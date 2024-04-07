@@ -1,5 +1,5 @@
-import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 import { recipes } from "../../recipes.js";
+import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 
 export class SearchFiltersTags {
   constructor() {
@@ -15,7 +15,7 @@ export class SearchFiltersTags {
    * Search tags in filters
    * @param {{object}} arrayOfFiltersItems - All filters items
    * @param {() => {}} searchByItemsFilters - Execute search by filters item
-   * @returns {[string]} Matching values with filter search input
+   * @returns {[string]} Matching recipes with filters tags
    */
 
   onChangeUpdateFiltersItems = (arrayOfFiltersItems, searchByItemsFilters = () => {}) => {
@@ -29,7 +29,7 @@ export class SearchFiltersTags {
           `js-filters-items-wrapper--${choosenCategory}`
         )[0];
 
-        // si la recherche est croisée (recherche principale + tag), affichage des recettes qui correspondent
+        // if there is a crossed search (main search + tag), display recipes matching
         if (inputValue) {
           const matchingFiltersItems = [];
 
@@ -51,7 +51,7 @@ export class SearchFiltersTags {
 
           this.filtersTemplate.handleFiltersTags(recipes);
         } else {
-          // sinon, la recherche ne contient que des tags => affichage des recettes correspondant au tag choisi
+          // else, search is by tags, display recipes matching selected tags
           this.filteredItems = null;
           const filtersElements = this.filtersTemplate.getFiltersItems(this.recipes);
           choosenFilter.innerHTML = this.filtersTemplate.getFilteredItems(

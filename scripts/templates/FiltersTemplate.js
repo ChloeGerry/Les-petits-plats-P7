@@ -1,5 +1,5 @@
-import { RecipesTemplate } from "./RecipesTemplate.js";
 import { recipes } from "../../recipes.js";
+import { RecipesTemplate } from "./RecipesTemplate.js";
 import { SearchRecipes } from "../utils/SearchRecipes.js";
 import { currentChoosenTags, filteredItems, searchInput } from "../utils/constants.js";
 
@@ -22,7 +22,6 @@ export class FiltersTemplate {
    */
 
   getFiltersItems = (recipes) => {
-    // get filters values and put them in array
     const ingredients = [];
     const appliances = [];
     const ustensils = [];
@@ -166,6 +165,7 @@ export class FiltersTemplate {
         const choosenTag = event.target.innerText;
         this.filtersTagsTemplate(choosenTag, currentChoosenTags);
         const search = new SearchRecipes();
+
         if (filteredItems.length > 0) {
           search.searchRecipeByTags(filteredItems[0], choosenTag);
         } else {
@@ -195,9 +195,9 @@ export class FiltersTemplate {
             }
           });
 
-          // si tous les tags ont été supprimés
+          // if all tags have been delated
           if (currentChoosenTags.length === 0) {
-            // et que la recherche principale est vide, j'affiche toutes les recettes disponibles
+            // & the main search is empty, I display all availaible recipes
             if (choosenInput.length === 0) {
               filteredItems.splice(0, filteredItems.length);
               this.displayNumberOfRecipes(recipes);
@@ -207,7 +207,7 @@ export class FiltersTemplate {
 
               this.recipesWrapper.innerHTML = displayMatchingRecipes;
             } else {
-              // sinon, j'affiche les recettes qui matchent avec la recherche principale
+              // else, I display recipes matching main search or an error message
               const matchingRecipes = [];
               const search = new SearchRecipes();
 
@@ -230,16 +230,16 @@ export class FiltersTemplate {
               this.recipesWrapper.innerHTML = displayMatchingRecipes;
             }
           } else {
-            // s'il reste des tags sélectionnés
+            // if there's still selected tags
             const search = new SearchRecipes();
-            // et que la recherche principale est vide, affichage des recettes correspondants au dernier tag sélectionné
+            // & main search is empty, I display recipes matching remaining choosen tags
             if (choosenInput.length === 0) {
               search.searchRecipeByTags(recipes, currentChoosenTags[0]);
               for (let index = 1; index < currentChoosenTags.length; index++) {
                 search.searchRecipeByTags(filteredItems[0], currentChoosenTags[index]);
               }
             } else {
-              // et si la recherche principale est utilisée, croisement des recherches
+              // & main search is used, I cross searches
               search.searchRecipeByTags(recipes, choosenInput[0]);
             }
           }
