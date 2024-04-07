@@ -1,23 +1,27 @@
-import { currentChoosenTags } from "../utils/constants.js";
+import { recipes } from "../../recipes.js";
+import { RecipesTemplate } from "./RecipesTemplate.js";
+import { SearchRecipes } from "../utils/SearchRecipes.js";
+import { currentChoosenTags, filteredItems, searchInput } from "../utils/constants.js";
 
 export class FiltersTemplate {
   constructor() {
+    this.recipesTemplate = new RecipesTemplate();
     this.filtersSection = document.getElementsByClassName("filters-section")[0];
     this.tagsWrapper = document.getElementsByClassName("tags-wrapper")[0];
     this.numberOfRecipes = document.getElementsByClassName("numbers-recipes")[0];
+    this.recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
     this.filteredItems = null;
   }
 
   /**
-   * method to get all the filters items
-   * @param {[object]} recipes - list of all recipes
+   * Get all filters items
+   * @param {[object]} recipes - All recipes
    * @returns {{Ingrédients: { ([string]) => {} }, filtersItems: [string]},
    * {Appareils: { ([string]) => {} }, filtersItems: [string]},
    * {Ustensiles: { ([string]) => {} }, filtersItems: [string]}} the object that contains all filters items and can display them
    */
 
   getFiltersItems = (recipes) => {
-    // get filters values and put them in array
     const ingredients = [];
     const appliances = [];
     const ustensils = [];
@@ -57,9 +61,9 @@ export class FiltersTemplate {
   };
 
   /**
-   * method to map filters values
-   * @param {[string]} filterElements - list of all filters elements
-   * @returns the template for each filter elements
+   * Map filters values
+   * @param {[string]} filterElements - All filters elements
+   * @returns Template for each filter elements
    */
 
   filtersTemplate = (filterElements) =>
@@ -69,11 +73,11 @@ export class FiltersTemplate {
     );
 
   /**
-   * method to fill the filters values
-   * @param {[string]} filterName - list of all filters categories
-   * @param {[object]} recipes - list of all recipes
-   * @param {[string]} filteredItems - list of all recipes
-   * @returns display the filters wrapper
+   * Fill filters values
+   * @param {[string]} filterName - Filters categories
+   * @param {[object]} filtersElements - Filters categories values + elements
+   * @param {[string]} filteredItems - Items matches filters search
+   * @returns Filters wrapper
    */
 
   displayFiltersValues = (filterName, filtersElements, filteredItems) => {
@@ -111,8 +115,8 @@ export class FiltersTemplate {
   };
 
   /**
-   * method to display the filters values
-   * @returns the opening / closing for the filters
+   * Display filters values
+   * @returns opening / closing for the filters
    */
 
   handleFilterValuesDisplay = () => {
@@ -148,40 +152,111 @@ export class FiltersTemplate {
       choosenTags.push(choosenTag);
       this.tagsWrapper.style.display = "flex";
       this.tagsWrapper.style.flexWrap = "wrap";
-      this.tagsWrapper.innerHTML += `<div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between"><p class="text-sm font-normal">${choosenTag}</p>
-      <img class="remove-tag-icon cursor-pointer" src="./assets/remove-icon.svg" alt="cross icon"></div>`;
+      this.tagsWrapper.innerHTML += `<div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between ${choosenTag}"><p class="text-sm font-normal">${choosenTag}</p>
+      <img data-id="${choosenTag}" class="remove-tag-icon cursor-pointer" src="./assets/remove-icon.svg" alt="cross icon"></div>`;
     }
   };
 
-  handleFiltersTags = () => {
+  handleFiltersTags = (recipes) => {
     const filtersTags = document.querySelectorAll(".filters-elements");
 
     filtersTags.forEach((filterTag) => {
       filterTag.addEventListener("click", (event) => {
         const choosenTag = event.target.innerText;
         this.filtersTagsTemplate(choosenTag, currentChoosenTags);
+        const search = new SearchRecipes();
+
+        if (filteredItems.length > 0) {
+          search.searchRecipeByTags(filteredItems[0], choosenTag);
+        } else {
+          search.searchRecipeByTags(recipes, choosenTag);
+        }
+        this.deleteFiltersTags();
       });
     });
   };
 
   deleteFiltersTags = () => {
     const deleteTagsIcons = document.querySelectorAll(".remove-tag-icon");
-    console.log("deleteTagsIcons", deleteTagsIcons);
 
-    deleteTagsIcons.forEach((deleteIcon, index) => {
+    deleteTagsIcons.forEach((deleteIcon) => {
       deleteIcon.addEventListener("click", () => {
-        console.log("deleteIcon", deleteIcon);
+        let displayMatchingRecipes = "";
+        const tagDataId = deleteIcon.dataset.id;
+        const tagToRemove = document.getElementsByClassName(`${tagDataId}`)[0];
+
+        if (tagToRemove) {
+          tagToRemove.remove();
+          const choosenInput = searchInput.slice(1, searchInput.length);
+
+          currentChoosenTags.forEach((choosenTag, index) => {
+            if (choosenTag === tagDataId) {
+              currentChoosenTags.splice(index, 1);
+            }
+          });
+
+          // if all tags have been delated
+          if (currentChoosenTags.length === 0) {
+            // & the main search is empty, I display all availaible recipes
+            if (choosenInput.length === 0) {
+              filteredItems.splice(0, filteredItems.length);
+              this.displayNumberOfRecipes(recipes);
+              recipes.forEach(
+                (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+              );
+
+              this.recipesWrapper.innerHTML = displayMatchingRecipes;
+            } else {
+              // else, I display recipes matching main search or an error message
+              const matchingRecipes = [];
+              const search = new SearchRecipes();
+
+              const updatedArrayRecipe = search.searchRecipeAlgorithm(
+                recipes,
+                choosenInput[0],
+                matchingRecipes
+              );
+
+              filteredItems.push(updatedArrayRecipe);
+
+              if (!updatedArrayRecipe || updatedArrayRecipe.length === 0) {
+                return (this.recipesWrapper.innerHTML = `<p>Aucune recette ne contient ${choosenInput[0]}, vous pouvez essayer avec un autre filtre</p>`);
+              }
+
+              updatedArrayRecipe.forEach(
+                (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+              );
+              this.displayNumberOfRecipes(updatedArrayRecipe);
+              this.recipesWrapper.innerHTML = displayMatchingRecipes;
+            }
+          } else {
+            // if there's still selected tags
+            const search = new SearchRecipes();
+            // & main search is empty, I display recipes matching remaining choosen tags
+            if (choosenInput.length === 0) {
+              search.searchRecipeByTags(recipes, currentChoosenTags[0]);
+              for (let index = 1; index < currentChoosenTags.length; index++) {
+                search.searchRecipeByTags(filteredItems[0], currentChoosenTags[index]);
+              }
+            } else {
+              // & main search is used, I cross searches
+              search.searchRecipeByTags(recipes, choosenInput[0]);
+            }
+          }
+        }
       });
     });
   };
 
   /**
-   * method to display the numbers of recipes shown
-   * @param {[object]} recipes - list of all recipes
-   * @returns the number of recipes display on the page
+   * Display number of recipes shown
+   * @param {[object]} recipes - All recipes
+   * @returns Number of recipes display on the page
    */
 
   displayNumberOfRecipes = (recipes) => {
-    this.numberOfRecipes.textContent = `${recipes.length} recettes`;
+    this.numberOfRecipes.textContent = `${recipes.length} ${
+      recipes.length > 1 ? "recettes" : "recette"
+    }`;
   };
 }

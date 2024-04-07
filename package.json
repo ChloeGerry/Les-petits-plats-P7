@@ -1,8 +1,16 @@
 {
+  "name": "Petits plats",
+  "version": "1.0.0",
+  "description": "Ce projet a été réalisé dans le cadre de ma formation de développeuse d'application. Il s'agit d'un site dynamique non responsive, avec comme axe de travail principal l'intégration d'un algorithme de recherche et de filtre.",
   "scripts": {
     "tailwindcss": "tailwindcss -i ./assets/style.css -o ./assets/tailwind-compiled.css --watch"
   },
+  "dependencies": {
+    "node": "20.11.0"
+  },
   "devDependencies": {
     "tailwindcss": "^3.4.1"
-  }
+  },
+  "author": "Chloé Gerry",
+  "license": "ISC"
 }
