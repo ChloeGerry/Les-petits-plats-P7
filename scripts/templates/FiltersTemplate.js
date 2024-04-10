@@ -11,6 +11,9 @@ export class FiltersTemplate {
     this.numberOfRecipes = document.getElementsByClassName("numbers-recipes")[0];
     this.recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
     this.filteredItems = null;
+    this.isIngredientsFilterOpen = false;
+    this.isAppliancesFilterOpen = false;
+    this.isUstensilsFilterOpen = false;
   }
 
   /**
@@ -119,31 +122,71 @@ export class FiltersTemplate {
    * @returns opening / closing for the filters
    */
 
-  handleFilterValuesDisplay = () => {
+  handleFiltersOpeningAndClosing = (event, choosenCategory) => {
     const arrowsIcons = document.getElementsByClassName("arrow-icon");
-    let isFilterOpen = false;
-
     const filterWrapperAppliances = document.getElementsByClassName("filter-wrapper")[1];
     filterWrapperAppliances.style.left = "385px";
     const filterWrapperUstensils = document.getElementsByClassName("filter-wrapper")[2];
     filterWrapperUstensils.style.left = "675px";
 
-    for (let i = 0; i < arrowsIcons.length; i++) {
-      arrowsIcons[i].addEventListener("click", () => {
-        isFilterOpen = !isFilterOpen;
-        const filterDisplayWrapper = document.getElementsByClassName("filter-search-wrapper");
-        const filterWrapper = document.getElementsByClassName("filter-wrapper");
-
-        if (isFilterOpen) {
-          filterDisplayWrapper[i].style.display = "flex";
-          arrowsIcons[i].style.transform = "rotate(180deg)";
-          filterWrapper[i].style.height = "315px";
-        } else {
-          filterDisplayWrapper[i].style.display = "none";
-          arrowsIcons[i].style.transform = "rotate(0deg)";
-          filterWrapper[i].style.height = "fit-content";
+    for (let arrowIndex = 0; arrowIndex < arrowsIcons.length; arrowIndex++) {
+      arrowsIcons[arrowIndex].addEventListener("click", () => {
+        switch (arrowIndex) {
+          case 0:
+            this.isIngredientsFilterOpen = !this.isIngredientsFilterOpen;
+            this.handleFilterValuesDisplay(
+              this.isIngredientsFilterOpen,
+              arrowIndex,
+              event,
+              choosenCategory
+            );
+            break;
+          case 1:
+            this.isAppliancesFilterOpen = !this.isAppliancesFilterOpen;
+            this.handleFilterValuesDisplay(
+              this.isAppliancesFilterOpen,
+              arrowIndex,
+              event,
+              choosenCategory
+            );
+            break;
+          case 2:
+            this.isUstensilsFilterOpen = !this.isUstensilsFilterOpen;
+            this.handleFilterValuesDisplay(
+              this.isUstensilsFilterOpen,
+              arrowIndex,
+              event,
+              choosenCategory
+            );
+            break;
+          default:
+            console.log("Une erreur est survenue");
         }
       });
+    }
+  };
+
+  handleFilterValuesDisplay = (isFilterOpen, index, event, choosenCategory) => {
+    const arrowsIcons = document.getElementsByClassName("arrow-icon");
+    const filterDisplayWrapper = document.getElementsByClassName("filter-search-wrapper");
+    const filterWrapper = document.getElementsByClassName("filter-wrapper");
+
+    if (isFilterOpen) {
+      filterDisplayWrapper[index].style.display = "flex";
+      arrowsIcons[index].style.transform = "rotate(180deg)";
+      filterWrapper[index].style.height = "315px";
+    } else {
+      filterDisplayWrapper[index].style.display = "none";
+      arrowsIcons[index].style.transform = "rotate(0deg)";
+      filterWrapper[index].style.height = "fit-content";
+      if (event) {
+        event.target.value = "";
+        const choosenFilter = document.getElementsByClassName(
+          `js-filters-items-wrapper--${choosenCategory}`
+        )[0];
+        const filtersElements = this.getFiltersItems(recipes);
+        choosenFilter.innerHTML = this.getFilteredItems(filtersElements, choosenCategory, null);
+      }
     }
   };
 
@@ -172,6 +215,29 @@ export class FiltersTemplate {
           search.searchRecipeByTags(recipes, choosenTag);
         }
         this.deleteFiltersTags();
+        const arrowsIcons = document.getElementsByClassName("arrow-icon");
+        const filterDisplayWrapper = document.getElementsByClassName("filter-search-wrapper");
+        const filterWrapper = document.getElementsByClassName("filter-wrapper");
+
+        for (let arrowIndex = 0; arrowIndex < arrowsIcons.length; arrowIndex++) {
+          filterDisplayWrapper[arrowIndex].style.display = "none";
+          arrowsIcons[arrowIndex].style.transform = "rotate(0deg)";
+          filterWrapper[arrowIndex].style.height = "fit-content";
+
+          switch (arrowIndex) {
+            case 0:
+              this.isIngredientsFilterOpen = !this.isIngredientsFilterOpen;
+              break;
+            case 1:
+              this.isAppliancesFilterOpen = !this.isIngredientsFilterOpen;
+              break;
+            case 2:
+              this.isUstensilsFilterOpen = !this.isIngredientsFilterOpen;
+              break;
+            default:
+              console.log("Une erreur est survenue");
+          }
+        }
       });
     });
   };

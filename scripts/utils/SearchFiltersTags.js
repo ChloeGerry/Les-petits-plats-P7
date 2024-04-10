@@ -29,6 +29,8 @@ export class SearchFiltersTags {
           `js-filters-items-wrapper--${choosenCategory}`
         )[0];
 
+        this.filtersTemplate.handleFiltersOpeningAndClosing(event, choosenCategory);
+
         // if there is a crossed search (main search + tag), display recipes matching
         if (inputValue) {
           const matchingFiltersItems = [];
