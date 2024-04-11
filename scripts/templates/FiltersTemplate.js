@@ -14,6 +14,9 @@ export class FiltersTemplate {
     this.isIngredientsFilterOpen = false;
     this.isAppliancesFilterOpen = false;
     this.isUstensilsFilterOpen = false;
+    this.ingredients = [];
+    this.appliances = [];
+    this.ustensils = [];
   }
 
   /**
@@ -25,39 +28,36 @@ export class FiltersTemplate {
    */
 
   getFiltersItems = (recipes) => {
-    const ingredients = [];
-    const appliances = [];
-    const ustensils = [];
-
     recipes.forEach((currentRecipe) => {
       currentRecipe.ingredients.forEach((recipe) => {
-        if (!ingredients.includes(recipe.ingredient)) {
-          ingredients.push(recipe.ingredient);
+        if (!this.ingredients.includes(recipe.ingredient)) {
+          this.ingredients.push(recipe.ingredient);
         }
       });
       currentRecipe.ustensils.forEach((ustensil) => {
-        if (!ustensils.includes(ustensil)) {
-          ustensils.push(ustensil);
+        if (!this.ustensils.includes(ustensil)) {
+          this.ustensils.push(ustensil);
         }
       });
     });
 
     recipes.filter(
-      (recipe) => !appliances.includes(recipe.appliance) && appliances.push(recipe.appliance)
+      (recipe) =>
+        !this.appliances.includes(recipe.appliance) && this.appliances.push(recipe.appliance)
     );
 
     const filtersElements = {
       Ingrédients: {
-        display: this.filtersTemplate(ingredients),
-        filtersItems: ingredients,
+        display: this.filtersTemplate(this.ingredients),
+        filtersItems: this.ingredients,
       },
       Appareils: {
-        display: this.filtersTemplate(appliances),
-        filtersItems: appliances,
+        display: this.filtersTemplate(this.appliances),
+        filtersItems: this.appliances,
       },
       Ustensiles: {
-        display: this.filtersTemplate(ustensils),
-        filtersItems: ustensils,
+        display: this.filtersTemplate(this.ustensils),
+        filtersItems: this.ustensils,
       },
     };
     return filtersElements;
@@ -122,15 +122,18 @@ export class FiltersTemplate {
    * @returns opening / closing for the filters
    */
 
-  handleFiltersOpeningAndClosing = (event, choosenCategory) => {
+  handleFiltersOpeningAndClosing = (event) => {
     const arrowsIcons = document.getElementsByClassName("arrow-icon");
     const filterWrapperAppliances = document.getElementsByClassName("filter-wrapper")[1];
     filterWrapperAppliances.style.left = "385px";
     const filterWrapperUstensils = document.getElementsByClassName("filter-wrapper")[2];
     filterWrapperUstensils.style.left = "675px";
+    const filterCategories = document.getElementsByClassName("filter-category");
 
     for (let arrowIndex = 0; arrowIndex < arrowsIcons.length; arrowIndex++) {
       arrowsIcons[arrowIndex].addEventListener("click", () => {
+        const choosenCategory = filterCategories[arrowIndex].innerHTML;
+
         switch (arrowIndex) {
           case 0:
             this.isIngredientsFilterOpen = !this.isIngredientsFilterOpen;
@@ -188,6 +191,8 @@ export class FiltersTemplate {
         choosenFilter.innerHTML = this.getFilteredItems(filtersElements, choosenCategory, null);
       }
     }
+
+    this.handleFiltersTags(recipes, choosenCategory);
   };
 
   filtersTagsTemplate = (choosenTag, choosenTags) => {
@@ -200,7 +205,7 @@ export class FiltersTemplate {
     }
   };
 
-  handleFiltersTags = (recipes) => {
+  handleFiltersTags = (recipes, choosenCategory) => {
     const filtersTags = document.querySelectorAll(".filters-elements");
 
     filtersTags.forEach((filterTag) => {
@@ -208,11 +213,45 @@ export class FiltersTemplate {
         const choosenTag = event.target.innerText;
         this.filtersTagsTemplate(choosenTag, currentChoosenTags);
         const search = new SearchRecipes();
+        const filtersElements = this.getFiltersItems(recipes);
+        const choosenFilter = document.getElementsByClassName(
+          `js-filters-items-wrapper--${choosenCategory}`
+        )[0];
 
         if (filteredItems.length > 0) {
           search.searchRecipeByTags(filteredItems[0], choosenTag);
+
+          const updatedFiltersElements = filtersElements[choosenCategory].filtersItems;
+
+          updatedFiltersElements.forEach((updatedFiltersElement, index) => {
+            if (updatedFiltersElement === choosenTag) {
+              updatedFiltersElements.splice(index, 1);
+              const currentfiltersElements = this.getFiltersItems(recipes);
+
+              choosenFilter.innerHTML = this.getFilteredItems(
+                currentfiltersElements,
+                choosenCategory,
+                null
+              );
+            }
+          });
         } else {
           search.searchRecipeByTags(recipes, choosenTag);
+
+          const updatedFiltersElements = filtersElements[choosenCategory].filtersItems;
+
+          updatedFiltersElements.forEach((updatedFiltersElement, index) => {
+            if (updatedFiltersElement === choosenTag) {
+              updatedFiltersElements.splice(index, 1);
+              const currentfiltersElements = this.getFiltersItems(recipes);
+
+              choosenFilter.innerHTML = this.getFilteredItems(
+                currentfiltersElements,
+                choosenCategory,
+                null
+              );
+            }
+          });
         }
         this.deleteFiltersTags();
         const arrowsIcons = document.getElementsByClassName("arrow-icon");

@@ -23,8 +23,7 @@ const filterRecipes = () => {
   );
 
   filtersTemplate.displayNumberOfRecipes(recipes);
-  filtersTemplate.handleFiltersOpeningAndClosing(null, null);
-  filtersTemplate.handleFiltersTags(recipes);
+  filtersTemplate.handleFiltersOpeningAndClosing(null);
 };
 
 const init = () => {

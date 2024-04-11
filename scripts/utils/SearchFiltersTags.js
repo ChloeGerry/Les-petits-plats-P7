@@ -25,11 +25,8 @@ export class SearchFiltersTags {
         const inputValue = event.target.value;
         const choosenCategory = this.filterCategories[index].innerHTML;
         const filteredItems = arrayOfFiltersItems[choosenCategory]["filtersItems"];
-        const choosenFilter = document.getElementsByClassName(
-          `js-filters-items-wrapper--${choosenCategory}`
-        )[0];
 
-        this.filtersTemplate.handleFiltersOpeningAndClosing(event, choosenCategory);
+        this.filtersTemplate.handleFiltersOpeningAndClosing(event);
 
         // if there is a crossed search (main search + tag), display recipes matching
         if (inputValue) {
@@ -45,6 +42,11 @@ export class SearchFiltersTags {
 
           this.filteredItems = matchingFiltersItems;
           searchByItemsFilters(matchingFiltersItems, choosenCategory);
+
+          const choosenFilter = document.getElementsByClassName(
+            `js-filters-items-wrapper--${choosenCategory}`
+          )[0];
+
           choosenFilter.innerHTML = this.filtersTemplate.getFilteredItems(
             matchingFiltersItems,
             choosenCategory,
