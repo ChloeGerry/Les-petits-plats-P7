@@ -53,7 +53,7 @@ export class SearchFiltersTags {
             this.filteredItems
           );
 
-          this.filtersTemplate.handleFiltersTags(recipes);
+          this.filtersTemplate.handleFiltersTags(recipes, choosenCategory);
         } else {
           // else, search is by tags, display recipes matching selected tags
           this.filteredItems = null;

@@ -24,9 +24,10 @@ export class SearchRecipes {
   searchRecipeAlgorithmTemplate = (recipes) => {
     const filtersElements = this.filtersTemplate.getFiltersItems(recipes);
 
-    this.searchFiltersTags.onChangeUpdateFiltersItems(filtersElements, (matchingFilterItems) => {
-      this.filteredItems = matchingFilterItems;
-    });
+    this.searchFiltersTags.onChangeUpdateFiltersItems(
+      filtersElements,
+      (matchingFilterItems) => matchingFilterItems
+    );
 
     this.searchInput.addEventListener("input", (event) => {
       event.preventDefault();

@@ -195,13 +195,13 @@ export class FiltersTemplate {
     this.handleFiltersTags(recipes, choosenCategory);
   };
 
-  filtersTagsTemplate = (choosenTag, choosenTags) => {
+  filtersTagsTemplate = (choosenTag, choosenTags, choosenCategory) => {
     if (!choosenTags.includes(choosenTag)) {
       choosenTags.push(choosenTag);
       this.tagsWrapper.style.display = "flex";
       this.tagsWrapper.style.flexWrap = "wrap";
       this.tagsWrapper.innerHTML += `<div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between ${choosenTag}"><p class="text-sm font-normal">${choosenTag}</p>
-      <img data-id="${choosenTag}" class="remove-tag-icon cursor-pointer" src="./assets/remove-icon.svg" alt="cross icon"></div>`;
+      <img data-id="${choosenTag}" data-parent="${choosenCategory}" class="remove-tag-icon cursor-pointer" src="./assets/remove-icon.svg" alt="cross icon"></div>`;
     }
   };
 
@@ -211,7 +211,7 @@ export class FiltersTemplate {
     filtersTags.forEach((filterTag) => {
       filterTag.addEventListener("click", (event) => {
         const choosenTag = event.target.innerText;
-        this.filtersTagsTemplate(choosenTag, currentChoosenTags);
+        this.filtersTagsTemplate(choosenTag, currentChoosenTags, choosenCategory);
         const search = new SearchRecipes();
         const filtersElements = this.getFiltersItems(recipes);
         const choosenFilter = document.getElementsByClassName(
@@ -221,7 +221,7 @@ export class FiltersTemplate {
         if (filteredItems.length > 0) {
           search.searchRecipeByTags(filteredItems[0], choosenTag);
 
-          const updatedFiltersElements = filtersElements[choosenCategory].filtersItems;
+          const updatedFiltersElements = filtersElements[choosenCategory]["filtersItems"];
 
           updatedFiltersElements.forEach((updatedFiltersElement, index) => {
             if (updatedFiltersElement === choosenTag) {
@@ -238,7 +238,7 @@ export class FiltersTemplate {
         } else {
           search.searchRecipeByTags(recipes, choosenTag);
 
-          const updatedFiltersElements = filtersElements[choosenCategory].filtersItems;
+          const updatedFiltersElements = filtersElements[choosenCategory]["filtersItems"];
 
           updatedFiltersElements.forEach((updatedFiltersElement, index) => {
             if (updatedFiltersElement === choosenTag) {
@@ -299,6 +299,17 @@ export class FiltersTemplate {
               currentChoosenTags.splice(index, 1);
             }
           });
+
+          const filtersElements = this.getFiltersItems(recipes);
+          const tagParent = deleteIcon.dataset.parent;
+          const choosenFilter = document.getElementsByClassName(
+            `js-filters-items-wrapper--${tagParent}`
+          )[0];
+
+          const currentfiltersElements = filtersElements[tagParent].filtersItems;
+          currentfiltersElements.splice(0, 1, tagDataId);
+          const updatedFiltersElements = this.getFiltersItems(recipes);
+          choosenFilter.innerHTML = this.getFilteredItems(updatedFiltersElements, tagParent, null);
 
           // if all tags have been delated
           if (currentChoosenTags.length === 0) {
