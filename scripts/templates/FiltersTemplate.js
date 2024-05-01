@@ -1,7 +1,14 @@
 import { recipes } from "../../recipes.js";
 import { RecipesTemplate } from "./RecipesTemplate.js";
 import { SearchRecipes } from "../utils/SearchRecipes.js";
-import { currentChoosenTags, filteredItems, searchInput } from "../utils/constants.js";
+import {
+  currentChoosenTags,
+  filteredItems,
+  searchInput,
+  INGREDIENTS,
+  APPLIANCES,
+  USTENSILS,
+} from "../utils/constants.js";
 
 export class FiltersTemplate {
   constructor() {
@@ -45,7 +52,9 @@ export class FiltersTemplate {
       (recipe) =>
         !this.appliances.includes(recipe.appliance) && this.appliances.push(recipe.appliance)
     );
+  };
 
+  getFiltersElements = () => {
     const filtersElements = {
       Ingrédients: {
         display: this.filtersTemplate(this.ingredients),
@@ -187,7 +196,8 @@ export class FiltersTemplate {
         const choosenFilter = document.getElementsByClassName(
           `js-filters-items-wrapper--${choosenCategory}`
         )[0];
-        const filtersElements = this.getFiltersItems(recipes);
+        this.getFiltersItems(recipes);
+        const filtersElements = this.getFiltersElements();
         choosenFilter.innerHTML = this.getFilteredItems(filtersElements, choosenCategory, null);
       }
     }
@@ -213,45 +223,19 @@ export class FiltersTemplate {
         const choosenTag = event.target.innerText;
         this.filtersTagsTemplate(choosenTag, currentChoosenTags, choosenCategory);
         const search = new SearchRecipes();
-        const filtersElements = this.getFiltersItems(recipes);
+        this.getFiltersItems(recipes);
         const choosenFilter = document.getElementsByClassName(
           `js-filters-items-wrapper--${choosenCategory}`
         )[0];
 
         if (filteredItems.length > 0) {
           search.searchRecipeByTags(filteredItems[0], choosenTag);
-
-          const updatedFiltersElements = filtersElements[choosenCategory]["filtersItems"];
-
-          updatedFiltersElements.forEach((updatedFiltersElement, index) => {
-            if (updatedFiltersElement === choosenTag) {
-              updatedFiltersElements.splice(index, 1);
-              const currentfiltersElements = this.getFiltersItems(recipes);
-
-              choosenFilter.innerHTML = this.getFilteredItems(
-                currentfiltersElements,
-                choosenCategory,
-                null
-              );
-            }
-          });
+          const filtersElements = this.getFiltersElements();
+          this.updateFiltersItems(filtersElements, choosenCategory, choosenTag, choosenFilter);
         } else {
           search.searchRecipeByTags(recipes, choosenTag);
-
-          const updatedFiltersElements = filtersElements[choosenCategory]["filtersItems"];
-
-          updatedFiltersElements.forEach((updatedFiltersElement, index) => {
-            if (updatedFiltersElement === choosenTag) {
-              updatedFiltersElements.splice(index, 1);
-              const currentfiltersElements = this.getFiltersItems(recipes);
-
-              choosenFilter.innerHTML = this.getFilteredItems(
-                currentfiltersElements,
-                choosenCategory,
-                null
-              );
-            }
-          });
+          const filtersElements = this.getFiltersElements();
+          this.updateFiltersItems(filtersElements, choosenCategory, choosenTag, choosenFilter);
         }
         this.deleteFiltersTags();
         const arrowsIcons = document.getElementsByClassName("arrow-icon");
@@ -281,6 +265,119 @@ export class FiltersTemplate {
     });
   };
 
+  removeUnmatchingRecipesTags = (
+    filtersElements,
+    matchingFiltersValues,
+    choosenTag,
+    currentArray,
+    choosenFilter,
+    choosenCategory
+  ) => {
+    filtersElements.filter((element) => {
+      if (
+        element !== choosenTag &&
+        matchingFiltersValues.includes(element) &&
+        !currentArray.includes(element)
+      ) {
+        currentArray.push(element);
+      }
+    });
+
+    if (filtersElements === this.ingredients) {
+      this.ingredients = currentArray;
+    } else if (filtersElements === this.appliances) {
+      this.appliances = currentArray;
+    } else if (filtersElements === this.ustensils) {
+      this.ustensils = currentArray;
+    }
+
+    const currentfiltersElements = this.getFiltersElements();
+    choosenFilter.innerHTML = this.getFilteredItems(currentfiltersElements, choosenCategory, null);
+  };
+
+  updateFiltersItems = (filtersElements, choosenCategory, choosenTag, choosenFilter) => {
+    const matchingFiltersValues = [];
+    const updatedFiltersElements = filtersElements[choosenCategory]["filtersItems"];
+
+    updatedFiltersElements.forEach((updatedFiltersElement) => {
+      switch (choosenCategory) {
+        case INGREDIENTS:
+          filteredItems[0].forEach((filteredItem) => {
+            filteredItem.ingredients.filter((recipeIngredient) => {
+              const isIngredientsEqual = recipeIngredient.ingredient.match(updatedFiltersElement);
+
+              if (
+                isIngredientsEqual &&
+                !matchingFiltersValues.includes(recipeIngredient.ingredient)
+              ) {
+                matchingFiltersValues.push(recipeIngredient.ingredient);
+              }
+            });
+          });
+          break;
+        case APPLIANCES:
+          filteredItems[0].forEach((filteredItem) => {
+            const isApplianceEqual = filteredItem.appliance.match(updatedFiltersElement);
+
+            if (isApplianceEqual && !matchingFiltersValues.includes(filteredItem.appliance)) {
+              matchingFiltersValues.push(filteredItem.appliance);
+            }
+          });
+          break;
+        case USTENSILS:
+          filteredItems[0].forEach((filteredItem) => {
+            filteredItem.ustensils.filter((recipeUstensils) => {
+              const isUstensilEqual = recipeUstensils.match(updatedFiltersElement);
+
+              if (isUstensilEqual && !matchingFiltersValues.includes(recipeUstensils)) {
+                matchingFiltersValues.push(recipeUstensils);
+              }
+            });
+          });
+          break;
+        default:
+          console.log("Pas de filtre correspondant");
+      }
+    });
+
+    let currentArray = [];
+
+    switch (choosenCategory) {
+      case INGREDIENTS:
+        this.removeUnmatchingRecipesTags(
+          this.ingredients,
+          matchingFiltersValues,
+          choosenTag,
+          currentArray,
+          choosenFilter,
+          choosenCategory
+        );
+        break;
+      case APPLIANCES:
+        this.removeUnmatchingRecipesTags(
+          this.appliances,
+          matchingFiltersValues,
+          choosenTag,
+          currentArray,
+          choosenFilter,
+          choosenCategory
+        );
+        break;
+      case USTENSILS:
+        this.removeUnmatchingRecipesTags(
+          this.ustensils,
+          matchingFiltersValues,
+          choosenTag,
+          currentArray,
+          choosenFilter,
+          choosenCategory
+        );
+        break;
+      default:
+        console.log("Pas de tableau correspondant");
+    }
+  };
+
   deleteFiltersTags = () => {
     const deleteTagsIcons = document.querySelectorAll(".remove-tag-icon");
 
@@ -300,7 +397,8 @@ export class FiltersTemplate {
             }
           });
 
-          const filtersElements = this.getFiltersItems(recipes);
+          this.getFiltersItems(recipes);
+          const filtersElements = this.getFiltersElements();
           const tagParent = deleteIcon.dataset.parent;
           const choosenFilter = document.getElementsByClassName(
             `js-filters-items-wrapper--${tagParent}`
@@ -308,7 +406,8 @@ export class FiltersTemplate {
 
           const currentfiltersElements = filtersElements[tagParent].filtersItems;
           currentfiltersElements.splice(0, 1, tagDataId);
-          const updatedFiltersElements = this.getFiltersItems(recipes);
+          this.getFiltersItems(recipes);
+          const updatedFiltersElements = this.getFiltersElements();
           choosenFilter.innerHTML = this.getFilteredItems(updatedFiltersElements, tagParent, null);
 
           // if all tags have been delated

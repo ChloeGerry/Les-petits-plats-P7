@@ -28,7 +28,7 @@ export class SearchFiltersTags {
 
         this.filtersTemplate.handleFiltersOpeningAndClosing(event);
 
-        // if there is a crossed search (main search + tag), display recipes matching
+        // if the search is by filling the filter input
         if (inputValue) {
           const matchingFiltersItems = [];
 
@@ -55,14 +55,16 @@ export class SearchFiltersTags {
 
           this.filtersTemplate.handleFiltersTags(recipes, choosenCategory);
         } else {
-          // else, search is by tags, display recipes matching selected tags
+          // else, search is by tags without search, display recipes matching selected tags
           this.filteredItems = null;
-          const filtersElements = this.filtersTemplate.getFiltersItems(this.recipes);
+          const filtersElements = this.filtersTemplate.getFiltersElements();
           choosenFilter.innerHTML = this.filtersTemplate.getFilteredItems(
             filtersElements,
             choosenCategory,
             this.filteredItems
           );
+
+          this.filtersTemplate.handleFiltersTags(recipes, choosenCategory);
         }
       });
     });

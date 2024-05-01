@@ -22,7 +22,8 @@ export class SearchRecipes {
    */
 
   searchRecipeAlgorithmTemplate = (recipes) => {
-    const filtersElements = this.filtersTemplate.getFiltersItems(recipes);
+    this.filtersTemplate.getFiltersItems(recipes);
+    const filtersElements = this.filtersTemplate.getFiltersElements();
 
     this.searchFiltersTags.onChangeUpdateFiltersItems(
       filtersElements,
@@ -152,17 +153,41 @@ export class SearchRecipes {
     return matchingRecipes;
   };
 
-  searchRecipesWithFilters = () => {};
+  searchRecipesWithFilters = (recipes, tagValue, matchingRecipes) => {
+    recipes.forEach((recipe) => {
+      recipe.ingredients.filter((recipeIngredient) => {
+        recipe.ustensils.filter((recipeUstensil) => {
+          const isApplianceEqual = recipe.appliance.toLowerCase().match(tagValue.toLowerCase());
+          const isUstensilEqual = recipeUstensil.toLowerCase().match(tagValue.toLowerCase());
+          const isIngredientsEqual = recipeIngredient.ingredient
+            .toLowerCase()
+            .match(tagValue.toLowerCase());
+
+          if (
+            (isApplianceEqual || isUstensilEqual || isIngredientsEqual) &&
+            !matchingRecipes.includes(recipe)
+          ) {
+            matchingRecipes.push(recipe);
+          }
+        });
+      });
+    });
+    return matchingRecipes;
+  };
 
   searchRecipeByTags = (recipes, currentChoosenTag) => {
     let displayMatchingRecipes = "";
     let matchingRecipes = [];
 
-    const updatedArrayRecipe = this.searchRecipeAlgorithm(
+    const updatedArrayRecipe = this.searchRecipesWithFilters(
       recipes,
       currentChoosenTag,
       matchingRecipes
     );
+
+    if (updatedArrayRecipe) {
+      filteredItems.splice(0, filteredItems.length);
+    }
 
     filteredItems.push(updatedArrayRecipe);
 

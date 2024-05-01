@@ -17,7 +17,8 @@ const filterRecipes = () => {
   const filtersCategories = [INGREDIENTS, APPLIANCES, USTENSILS];
   const filtersTemplate = new FiltersTemplate();
 
-  const filtersElements = filtersTemplate.getFiltersItems(recipes);
+  filtersTemplate.getFiltersItems(recipes);
+  const filtersElements = filtersTemplate.getFiltersElements();
   filtersCategories.map((filterCategory) =>
     filtersTemplate.displayFiltersValues(filterCategory, filtersElements, null)
   );
