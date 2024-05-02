@@ -9,11 +9,11 @@ const displayRecipesCards = () => {
   const recipesTemplate = new RecipesTemplate();
   let recipesToAdd = "";
 
-  recipes.map((recipe) => (recipesToAdd += recipesTemplate.getRecipeCard(recipe)));
+  recipes.map((recipe) => (recipesToAdd += recipesTemplate.recipeCardTemplate(recipe)));
   recipesWrapper.innerHTML = recipesToAdd;
 };
 
-const filterRecipes = () => {
+const handleRecipesFilter = () => {
   const filtersCategories = [INGREDIENTS, APPLIANCES, USTENSILS];
   const filtersTemplate = new FiltersTemplate();
 
@@ -28,11 +28,11 @@ const filterRecipes = () => {
 };
 
 const init = () => {
-  filterRecipes();
+  handleRecipesFilter();
   displayRecipesCards();
 
-  const search = new SearchRecipes();
-  search.searchRecipeAlgorithmTemplate(recipes);
+  const searchRecipes = new SearchRecipes();
+  searchRecipes.searchRecipeAlgorithmTemplate(recipes);
 };
 
 init();

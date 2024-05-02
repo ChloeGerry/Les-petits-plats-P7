@@ -439,7 +439,8 @@ export class FiltersTemplate {
               filteredItems.splice(0, filteredItems.length);
               this.displayNumberOfRecipes(recipes);
               recipes.forEach(
-                (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+                (recipe) =>
+                  (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))
               );
 
               this.recipesWrapper.innerHTML = displayMatchingRecipes;
@@ -462,7 +463,8 @@ export class FiltersTemplate {
               }
 
               updatedArrayRecipe.forEach(
-                (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+                (recipe) =>
+                  (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))
               );
               this.displayNumberOfRecipes(updatedArrayRecipe);
               this.recipesWrapper.innerHTML = displayMatchingRecipes;

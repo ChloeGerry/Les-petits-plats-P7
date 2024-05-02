@@ -11,129 +11,142 @@ import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 
 export class SearchFiltersTags {
   constructor() {
-    this.filtersTemplate = new FiltersTemplate();
     this.recipes = recipes;
+    this.filtersTemplate = new FiltersTemplate();
     this.inputSearchFiltersCategories = document.querySelectorAll(".search-input-filter");
     this.filterCategories = document.getElementsByClassName("filter-category");
     this.filtersTags = document.querySelectorAll(".filters-elements");
-    this.filteredItems = null;
+    this.filteredFilterItems = null;
   }
 
   /**
-   * Search tags in filters
-   * @param {{object}} arrayOfFiltersItems - All filters items
-   * @param {() => {}} searchByItemsFilters - Execute search by filters item
-   * @returns {[string]} Matching recipes with filters tags
+   * Display updated filter items
+   * @param {[string]} filterItems - All filters items
+   * @param {string} inputValue - Input value
+   * @param {[string]} filterItemsMatchingInputValue - All filters items matching the input
+   * @param {() => {}} searchItemsInFilter - Execute the search in filters items
+   * @param {string} filterName - Filter name
+   * @param {string} filterItemsWrapperDOMElement - Filter items wrapper DOM element
    */
 
-  updateFiltersValues = (
-    filtersValues,
+  displayUptatedFilterItems = (
+    filterItems,
     inputValue,
-    matchingFiltersItems,
-    searchByItemsFilters = () => {},
-    choosenCategory,
-    choosenFilter
+    filterItemsMatchingInputValue,
+    searchItemsInFilter = () => {},
+    filterName,
+    filterItemsWrapperDOMElement
   ) => {
-    filtersValues[0].find((filtersValue) => {
-      const matchingFiltersValue = filtersValue.toLowerCase().match(inputValue.toLowerCase());
+    filterItems[0].find((filterItem) => {
+      const filterItemIsEqualInputValue = filterItem.toLowerCase().match(inputValue.toLowerCase());
 
-      if (matchingFiltersValue && !matchingFiltersItems.includes(filtersValue)) {
-        matchingFiltersItems.push(filtersValue);
+      if (filterItemIsEqualInputValue && !filterItemsMatchingInputValue.includes(filterItem)) {
+        filterItemsMatchingInputValue.push(filterItem);
       }
     });
 
-    this.filteredItems = matchingFiltersItems;
-    searchByItemsFilters(matchingFiltersItems, choosenCategory);
+    this.filteredFilterItems = filterItemsMatchingInputValue;
+    searchItemsInFilter(filterItemsMatchingInputValue, filterName);
 
-    choosenFilter.innerHTML = this.filtersTemplate.getFilteredItems(
-      matchingFiltersItems,
-      choosenCategory,
-      this.filteredItems
+    filterItemsWrapperDOMElement.innerHTML = this.filtersTemplate.getFilteredItems(
+      filterItemsMatchingInputValue,
+      filterName,
+      this.filteredFilterItems
     );
 
-    this.filtersTemplate.handleFiltersTags(recipes, choosenCategory);
+    this.filtersTemplate.handleFiltersTags(this.recipes, filterName);
   };
 
-  onChangeUpdateFiltersItems = (arrayOfFiltersItems, searchByItemsFilters = () => {}) => {
+  /**
+   * Update filters items
+   * @param {{object}} filtersItemsAndDOMElements - Filter items wrapper DOM element
+   * @param {() => {}} searchItemsInFilter - Execute the search in filters items
+   */
+
+  onChangeUpdateFiltersItems = (filtersItemsAndDOMElements, searchItemsInFilter = () => {}) => {
     this.inputSearchFiltersCategories.forEach((inputSearchFilterCategory, index) => {
       inputSearchFilterCategory.addEventListener("input", (event) => {
         event.preventDefault();
         const inputValue = event.target.value;
-        const choosenCategory = this.filterCategories[index].innerHTML;
-        const choosenFilter = document.getElementsByClassName(
-          `js-filters-items-wrapper--${choosenCategory}`
+        const filterName = this.filterCategories[index].innerHTML;
+        const filterItemsWrapperDOMElement = document.getElementsByClassName(
+          `js-filters-items-wrapper--${filterName}`
         )[0];
 
         this.filtersTemplate.handleFiltersOpeningAndClosing(event);
 
         // if the search is by filling the filter input
         if (inputValue) {
-          const matchingFiltersItems = [];
+          const filterItemsMatchingInputValue = [];
 
           if (ingredients.length > 0 || appliances.length > 0 || ustensils.length > 0) {
-            if (choosenCategory === INGREDIENTS) {
-              this.updateFiltersValues(
+            if (filterName === INGREDIENTS) {
+              this.displayUptatedFilterItems(
                 ingredients,
                 inputValue,
-                matchingFiltersItems,
-                (searchByItemsFilters = () => {}),
-                choosenCategory,
-                choosenFilter
+                filterItemsMatchingInputValue,
+                (searchItemsInFilter = () => {}),
+                filterName,
+                filterItemsWrapperDOMElement
               );
-            } else if (choosenCategory === APPLIANCES) {
-              this.updateFiltersValues(
+            } else if (filterName === APPLIANCES) {
+              this.displayUptatedFilterItems(
                 appliances,
                 inputValue,
-                matchingFiltersItems,
-                (searchByItemsFilters = () => {}),
-                choosenCategory,
-                choosenFilter
+                filterItemsMatchingInputValue,
+                (searchItemsInFilter = () => {}),
+                filterName,
+                filterItemsWrapperDOMElement
               );
-            } else if (choosenCategory === USTENSILS) {
-              this.updateFiltersValues(
+            } else if (filterName === USTENSILS) {
+              this.displayUptatedFilterItems(
                 ustensils,
                 inputValue,
-                matchingFiltersItems,
-                (searchByItemsFilters = () => {}),
-                choosenCategory,
-                choosenFilter
+                filterItemsMatchingInputValue,
+                (searchItemsInFilter = () => {}),
+                filterName,
+                filterItemsWrapperDOMElement
               );
             }
           } else {
-            const filteredItems = arrayOfFiltersItems[choosenCategory]["filtersItems"];
+            const filterItems = filtersItemsAndDOMElements[filterName]["filtersItems"];
 
-            filteredItems.find((filteredItem) => {
-              const matchingFiltersValue = filteredItem
+            filterItems.find((filterItem) => {
+              const filterItemIsEqualInputValue = filterItem
                 .toLowerCase()
                 .match(inputValue.toLowerCase());
 
-              if (matchingFiltersValue && !matchingFiltersItems.includes(filteredItem)) {
-                matchingFiltersItems.push(filteredItem);
+              if (
+                filterItemIsEqualInputValue &&
+                !filterItemsMatchingInputValue.includes(filterItem)
+              ) {
+                filterItemsMatchingInputValue.push(filterItem);
               }
             });
 
-            this.filteredItems = matchingFiltersItems;
-            searchByItemsFilters(matchingFiltersItems, choosenCategory);
+            this.filteredFilterItems = filterItemsMatchingInputValue;
+            searchItemsInFilter(filterItemsMatchingInputValue, filterName);
 
-            choosenFilter.innerHTML = this.filtersTemplate.getFilteredItems(
-              matchingFiltersItems,
-              choosenCategory,
-              this.filteredItems
+            filterItemsWrapperDOMElement.innerHTML = this.filtersTemplate.getFilteredItems(
+              filterItemsMatchingInputValue,
+              filterName,
+              this.filteredFilterItems
             );
 
-            this.filtersTemplate.handleFiltersTags(recipes, choosenCategory);
+            this.filtersTemplate.handleFiltersTags(this.recipes, filterName);
           }
         } else {
           // else, search is by tags without search, display recipes matching selected tags
-          this.filteredItems = null;
+          this.filteredFilterItems = null;
           const filtersElements = this.filtersTemplate.getFiltersElements();
-          choosenFilter.innerHTML = this.filtersTemplate.getFilteredItems(
+
+          filterItemsWrapperDOMElement.innerHTML = this.filtersTemplate.getFilteredItems(
             filtersElements,
-            choosenCategory,
-            this.filteredItems
+            filterName,
+            this.filteredFilterItems
           );
 
-          this.filtersTemplate.handleFiltersTags(recipes, choosenCategory);
+          this.filtersTemplate.handleFiltersTags(this.recipes, filterName);
         }
       });
     });

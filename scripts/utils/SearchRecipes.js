@@ -23,10 +23,10 @@ export class SearchRecipes {
 
   searchRecipeAlgorithmTemplate = (recipes) => {
     this.filtersTemplate.getFiltersItems(recipes);
-    const filtersElements = this.filtersTemplate.getFiltersElements();
+    const filtersItemsAndDOMElements = this.filtersTemplate.getFiltersElements();
 
     this.searchFiltersTags.onChangeUpdateFiltersItems(
-      filtersElements,
+      filtersItemsAndDOMElements,
       (matchingFilterItems) => matchingFilterItems
     );
 
@@ -43,7 +43,7 @@ export class SearchRecipes {
         this.filtersTemplate.displayNumberOfRecipes(recipes);
 
         recipes.forEach(
-          (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+          (recipe) => (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))
         );
 
         this.recipesWrapper.innerHTML = displayMatchingRecipes;
@@ -73,7 +73,8 @@ export class SearchRecipes {
             filteredItems.splice(0, filteredItems.length);
 
             recipes.forEach(
-              (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+              (recipe) =>
+                (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))
             );
 
             this.filtersTemplate.displayNumberOfRecipes(recipes);
@@ -97,7 +98,7 @@ export class SearchRecipes {
           }
 
           filteredRecipes.forEach(
-            (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+            (recipe) => (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))
           );
           this.filtersTemplate.displayNumberOfRecipes(filteredRecipes);
           this.recipesWrapper.innerHTML = displayMatchingRecipes;
@@ -112,7 +113,7 @@ export class SearchRecipes {
           }
 
           arrayRecipe.forEach(
-            (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+            (recipe) => (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))
           );
           this.filtersTemplate.displayNumberOfRecipes(arrayRecipe);
           this.recipesWrapper.innerHTML = displayMatchingRecipes;
@@ -201,7 +202,7 @@ export class SearchRecipes {
     }
 
     updatedArrayRecipe.forEach(
-      (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+      (recipe) => (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))
     );
 
     this.filtersTemplate.displayNumberOfRecipes(updatedArrayRecipe);
