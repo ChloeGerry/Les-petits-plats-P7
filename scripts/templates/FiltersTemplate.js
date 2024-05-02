@@ -182,6 +182,10 @@ export class FiltersTemplate {
     const arrowsIcons = document.getElementsByClassName("arrow-icon");
     const filterDisplayWrapper = document.getElementsByClassName("filter-search-wrapper");
     const filterWrapper = document.getElementsByClassName("filter-wrapper");
+    const filtersElements = this.getFiltersElements();
+    const choosenFilter = document.getElementsByClassName(
+      `js-filters-items-wrapper--${choosenCategory}`
+    )[0];
 
     if (isFilterOpen) {
       filterDisplayWrapper[index].style.display = "flex";
@@ -193,13 +197,18 @@ export class FiltersTemplate {
       filterWrapper[index].style.height = "fit-content";
       if (event) {
         event.target.value = "";
-        const choosenFilter = document.getElementsByClassName(
-          `js-filters-items-wrapper--${choosenCategory}`
-        )[0];
         this.getFiltersItems(recipes);
-        const filtersElements = this.getFiltersElements();
         choosenFilter.innerHTML = this.getFilteredItems(filtersElements, choosenCategory, null);
       }
+    }
+
+    if (searchInput.length === 0 && currentChoosenTags.length === 0) {
+      this.getFiltersItems(recipes);
+      choosenFilter.innerHTML = this.getFilteredItems(filtersElements, choosenCategory, null);
+    }
+
+    if (searchInput.length > 0 && currentChoosenTags.length === 0) {
+      this.updateFiltersItems(filtersElements, choosenCategory, null, choosenFilter);
     }
 
     this.handleFiltersTags(recipes, choosenCategory);
@@ -217,6 +226,10 @@ export class FiltersTemplate {
 
   handleFiltersTags = (recipes, choosenCategory) => {
     const filtersTags = document.querySelectorAll(".filters-elements");
+    const filtersElements = this.getFiltersElements();
+    const choosenFilter = document.getElementsByClassName(
+      `js-filters-items-wrapper--${choosenCategory}`
+    )[0];
 
     filtersTags.forEach((filterTag) => {
       filterTag.addEventListener("click", (event) => {
@@ -224,17 +237,12 @@ export class FiltersTemplate {
         this.filtersTagsTemplate(choosenTag, currentChoosenTags, choosenCategory);
         const search = new SearchRecipes();
         this.getFiltersItems(recipes);
-        const choosenFilter = document.getElementsByClassName(
-          `js-filters-items-wrapper--${choosenCategory}`
-        )[0];
 
         if (filteredItems.length > 0) {
           search.searchRecipeByTags(filteredItems[0], choosenTag);
-          const filtersElements = this.getFiltersElements();
           this.updateFiltersItems(filtersElements, choosenCategory, choosenTag, choosenFilter);
         } else {
           search.searchRecipeByTags(recipes, choosenTag);
-          const filtersElements = this.getFiltersElements();
           this.updateFiltersItems(filtersElements, choosenCategory, choosenTag, choosenFilter);
         }
         this.deleteFiltersTags();
@@ -274,12 +282,18 @@ export class FiltersTemplate {
     choosenCategory
   ) => {
     filtersElements.filter((element) => {
-      if (
-        element !== choosenTag &&
-        matchingFiltersValues.includes(element) &&
-        !currentArray.includes(element)
-      ) {
-        currentArray.push(element);
+      if (!choosenTag) {
+        if (matchingFiltersValues.includes(element) && !currentArray.includes(element)) {
+          currentArray.push(element);
+        }
+      } else {
+        if (
+          element !== choosenTag &&
+          matchingFiltersValues.includes(element) &&
+          !currentArray.includes(element)
+        ) {
+          currentArray.push(element);
+        }
       }
     });
 
@@ -404,12 +418,6 @@ export class FiltersTemplate {
             `js-filters-items-wrapper--${tagParent}`
           )[0];
 
-          const currentfiltersElements = filtersElements[tagParent].filtersItems;
-          currentfiltersElements.splice(0, 1, tagDataId);
-          this.getFiltersItems(recipes);
-          const updatedFiltersElements = this.getFiltersElements();
-          choosenFilter.innerHTML = this.getFilteredItems(updatedFiltersElements, tagParent, null);
-
           // if all tags have been delated
           if (currentChoosenTags.length === 0) {
             // & the main search is empty, I display all availaible recipes
@@ -421,6 +429,7 @@ export class FiltersTemplate {
               );
 
               this.recipesWrapper.innerHTML = displayMatchingRecipes;
+              choosenFilter.innerHTML = this.getFilteredItems(filtersElements, tagParent, null);
             } else {
               // else, I display recipes matching main search or an error message
               const matchingRecipes = [];
