@@ -8,6 +8,9 @@ import {
   INGREDIENTS,
   APPLIANCES,
   USTENSILS,
+  ingredients,
+  appliances,
+  ustensils,
 } from "../utils/constants.js";
 
 export class FiltersTemplate {
@@ -34,6 +37,8 @@ export class FiltersTemplate {
    * {Ustensiles: { ([string]) => {} }, filtersItems: [string]}} the object that contains all filters items and can display them
    */
 
+  // get => return
+  // filter => ok
   getFiltersItems = (recipes) => {
     recipes.forEach((currentRecipe) => {
       currentRecipe.ingredients.forEach((recipe) => {
@@ -128,7 +133,7 @@ export class FiltersTemplate {
 
   /**
    * Display filters values
-   * @returns opening / closing for the filters
+   * opening / closing for the filters
    */
 
   handleFiltersOpeningAndClosing = (event) => {
@@ -232,6 +237,7 @@ export class FiltersTemplate {
     )[0];
 
     filtersTags.forEach((filterTag) => {
+      // ajouter une function
       filterTag.addEventListener("click", (event) => {
         const choosenTag = event.target.innerText;
         this.filtersTagsTemplate(choosenTag, currentChoosenTags, choosenCategory);
@@ -358,6 +364,10 @@ export class FiltersTemplate {
 
     switch (choosenCategory) {
       case INGREDIENTS:
+        // console.log("ingredients BEFORE", ingredients);
+        ingredients.splice(0, ingredients.length);
+        ingredients.push(matchingFiltersValues);
+
         this.removeUnmatchingRecipesTags(
           this.ingredients,
           matchingFiltersValues,
@@ -368,6 +378,8 @@ export class FiltersTemplate {
         );
         break;
       case APPLIANCES:
+        appliances.splice(0, ingredients.length);
+        appliances.push(matchingFiltersValues);
         this.removeUnmatchingRecipesTags(
           this.appliances,
           matchingFiltersValues,
@@ -378,6 +390,8 @@ export class FiltersTemplate {
         );
         break;
       case USTENSILS:
+        ustensils.splice(0, ingredients.length);
+        ustensils.push(matchingFiltersValues);
         this.removeUnmatchingRecipesTags(
           this.ustensils,
           matchingFiltersValues,

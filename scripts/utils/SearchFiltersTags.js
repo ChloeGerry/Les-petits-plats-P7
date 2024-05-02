@@ -1,4 +1,12 @@
 import { recipes } from "../../recipes.js";
+import {
+  ingredients,
+  appliances,
+  ustensils,
+  INGREDIENTS,
+  APPLIANCES,
+  USTENSILS,
+} from "../utils/constants.js";
 import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 
 export class SearchFiltersTags {
@@ -18,13 +26,43 @@ export class SearchFiltersTags {
    * @returns {[string]} Matching recipes with filters tags
    */
 
+  updateFiltersValues = (
+    filtersValues,
+    inputValue,
+    matchingFiltersItems,
+    searchByItemsFilters = () => {},
+    choosenCategory,
+    choosenFilter
+  ) => {
+    filtersValues[0].find((filtersValue) => {
+      const matchingFiltersValue = filtersValue.toLowerCase().match(inputValue.toLowerCase());
+
+      if (matchingFiltersValue && !matchingFiltersItems.includes(filtersValue)) {
+        matchingFiltersItems.push(filtersValue);
+      }
+    });
+
+    this.filteredItems = matchingFiltersItems;
+    searchByItemsFilters(matchingFiltersItems, choosenCategory);
+
+    choosenFilter.innerHTML = this.filtersTemplate.getFilteredItems(
+      matchingFiltersItems,
+      choosenCategory,
+      this.filteredItems
+    );
+
+    this.filtersTemplate.handleFiltersTags(recipes, choosenCategory);
+  };
+
   onChangeUpdateFiltersItems = (arrayOfFiltersItems, searchByItemsFilters = () => {}) => {
     this.inputSearchFiltersCategories.forEach((inputSearchFilterCategory, index) => {
       inputSearchFilterCategory.addEventListener("input", (event) => {
         event.preventDefault();
         const inputValue = event.target.value;
         const choosenCategory = this.filterCategories[index].innerHTML;
-        const filteredItems = arrayOfFiltersItems[choosenCategory]["filtersItems"];
+        const choosenFilter = document.getElementsByClassName(
+          `js-filters-items-wrapper--${choosenCategory}`
+        )[0];
 
         this.filtersTemplate.handleFiltersOpeningAndClosing(event);
 
@@ -32,28 +70,59 @@ export class SearchFiltersTags {
         if (inputValue) {
           const matchingFiltersItems = [];
 
-          filteredItems.find((filteredItem) => {
-            const matchingFiltersValue = filteredItem.toLowerCase().match(inputValue.toLowerCase());
-
-            if (matchingFiltersValue && !matchingFiltersItems.includes(filteredItem)) {
-              matchingFiltersItems.push(filteredItem);
+          if (ingredients.length > 0 || appliances.length > 0 || ustensils.length > 0) {
+            if (choosenCategory === INGREDIENTS) {
+              this.updateFiltersValues(
+                ingredients,
+                inputValue,
+                matchingFiltersItems,
+                (searchByItemsFilters = () => {}),
+                choosenCategory,
+                choosenFilter
+              );
+            } else if (choosenCategory === APPLIANCES) {
+              this.updateFiltersValues(
+                appliances,
+                inputValue,
+                matchingFiltersItems,
+                (searchByItemsFilters = () => {}),
+                choosenCategory,
+                choosenFilter
+              );
+            } else if (choosenCategory === USTENSILS) {
+              this.updateFiltersValues(
+                ustensils,
+                inputValue,
+                matchingFiltersItems,
+                (searchByItemsFilters = () => {}),
+                choosenCategory,
+                choosenFilter
+              );
             }
-          });
+          } else {
+            const filteredItems = arrayOfFiltersItems[choosenCategory]["filtersItems"];
 
-          this.filteredItems = matchingFiltersItems;
-          searchByItemsFilters(matchingFiltersItems, choosenCategory);
+            filteredItems.find((filteredItem) => {
+              const matchingFiltersValue = filteredItem
+                .toLowerCase()
+                .match(inputValue.toLowerCase());
 
-          const choosenFilter = document.getElementsByClassName(
-            `js-filters-items-wrapper--${choosenCategory}`
-          )[0];
+              if (matchingFiltersValue && !matchingFiltersItems.includes(filteredItem)) {
+                matchingFiltersItems.push(filteredItem);
+              }
+            });
 
-          choosenFilter.innerHTML = this.filtersTemplate.getFilteredItems(
-            matchingFiltersItems,
-            choosenCategory,
-            this.filteredItems
-          );
+            this.filteredItems = matchingFiltersItems;
+            searchByItemsFilters(matchingFiltersItems, choosenCategory);
 
-          this.filtersTemplate.handleFiltersTags(recipes, choosenCategory);
+            choosenFilter.innerHTML = this.filtersTemplate.getFilteredItems(
+              matchingFiltersItems,
+              choosenCategory,
+              this.filteredItems
+            );
+
+            this.filtersTemplate.handleFiltersTags(recipes, choosenCategory);
+          }
         } else {
           // else, search is by tags without search, display recipes matching selected tags
           this.filteredItems = null;

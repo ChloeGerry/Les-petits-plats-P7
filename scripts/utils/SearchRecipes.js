@@ -130,6 +130,9 @@ export class SearchRecipes {
    */
 
   searchRecipeAlgorithm = (recipes, inputValue, matchingRecipes) => {
+    // ajouter la validation de la regex
+    const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
+    console.log("");
     // add search algorithm for both methods
     for (let i = 0; i < recipes.length; i++) {
       for (let j = 0; j < recipes[i].ingredients.length; j++) {
