@@ -20,26 +20,21 @@ export class FiltersTemplate {
     this.tagsWrapper = document.getElementsByClassName("tags-wrapper")[0];
     this.numberOfRecipes = document.getElementsByClassName("numbers-recipes")[0];
     this.recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
-    this.filteredItems = null;
     this.isIngredientsFilterOpen = false;
     this.isAppliancesFilterOpen = false;
     this.isUstensilsFilterOpen = false;
     this.ingredients = [];
     this.appliances = [];
     this.ustensils = [];
+    this.recipes = recipes;
   }
 
   /**
-   * Get all filters items
+   * Define all filters items
    * @param {[object]} recipes - All recipes
-   * @returns {{Ingrédients: { ([string]) => {} }, filtersItems: [string]},
-   * {Appareils: { ([string]) => {} }, filtersItems: [string]},
-   * {Ustensiles: { ([string]) => {} }, filtersItems: [string]}} the object that contains all filters items and can display them
    */
 
-  // get => return
-  // filter => ok
-  getFiltersItems = (recipes) => {
+  defineFiltersItems = (recipes) => {
     recipes.forEach((currentRecipe) => {
       currentRecipe.ingredients.forEach((recipe) => {
         if (!this.ingredients.includes(recipe.ingredient)) {
@@ -58,6 +53,13 @@ export class FiltersTemplate {
         !this.appliances.includes(recipe.appliance) && this.appliances.push(recipe.appliance)
     );
   };
+
+  /**
+   * Get all filters elements
+   * @returns {{Ingrédients: { ([string]) => {} }, filtersItems: [string]},
+   * {Appareils: { ([string]) => {} }, filtersItems: [string]},
+   * {Ustensiles: { ([string]) => {} }, filtersItems: [string]}} the object that contains all filters items and a function to display them
+   */
 
   getFiltersElements = () => {
     const filtersElements = {
@@ -78,9 +80,9 @@ export class FiltersTemplate {
   };
 
   /**
-   * Map filters values
-   * @param {[string]} filterElements - All filters elements
-   * @returns Template for each filter elements
+   * Map filters items
+   * @param {[string]} filterElements - All filters items
+   * @returns Template for each filter item
    */
 
   filtersTemplate = (filterElements) =>
@@ -91,13 +93,13 @@ export class FiltersTemplate {
 
   /**
    * Fill filters values
-   * @param {[string]} filterName - Filters categories
-   * @param {[object]} filtersElements - Filters categories values + elements
+   * @param {[string]} filterName - Filter name
+   * @param {[object]} filtersElements - Filters categories values + items
    * @param {[string]} filteredItems - Items matches filters search
    * @returns Filters wrapper
    */
 
-  displayFiltersValues = (filterName, filtersElements, filteredItems) => {
+  filtersWrapperTemplate = (filterName, filtersElements) => {
     this.filtersSection.innerHTML += `<div class="filter-wrapper absolute flex z-10 flex-col bg-white p-4 h-fit rounded-xl w-56 overflow-y-auto top-[690px]">
       <div class="flex justify-between w-48">
         <p class="m-0 filter-category">${filterName}</p>
@@ -107,19 +109,18 @@ export class FiltersTemplate {
         <input class="search-input-filter border border-style:solid mb-6 mt-4 p-3" type="search">
         <img class="absolute right-3 top-8" src="./assets/search-grey-icon.svg" alt="search icon">
         <div class="js-filters-items-wrapper--${filterName}">
-          ${this.getFilteredItems(filtersElements, filterName, filteredItems)}
+          ${this.getFilteredItems(filtersElements, filterName)}
         </div>
       </div>
     </div>
    `;
   };
 
-  getFilteredItems = (filtersElements, filterName, filteredItems) => {
+  getFilteredItems = (filtersElements, filterName) => {
     let recipesFilterValues = "";
-    this.filteredItems = filteredItems;
 
     // join filters values to the wrapper using the filtersElements array
-    if (this.filteredItems) {
+    if (filtersElements.length > 0) {
       recipesFilterValues = `<div class="filter-items-wrapper flex flex-col gap-3">
       ${this.filtersTemplate(filtersElements).join("")}
       </div>`;
@@ -133,7 +134,8 @@ export class FiltersTemplate {
 
   /**
    * Display filters values
-   * opening / closing for the filters
+   * @param {event} event - Filter input event listener
+   * handle the opening / closing for the filters
    */
 
   handleFiltersOpeningAndClosing = (event) => {
@@ -146,7 +148,7 @@ export class FiltersTemplate {
 
     for (let arrowIndex = 0; arrowIndex < arrowsIcons.length; arrowIndex++) {
       arrowsIcons[arrowIndex].addEventListener("click", () => {
-        const choosenCategory = filterCategories[arrowIndex].innerHTML;
+        const filterName = filterCategories[arrowIndex].innerHTML;
 
         switch (arrowIndex) {
           case 0:
@@ -155,7 +157,7 @@ export class FiltersTemplate {
               this.isIngredientsFilterOpen,
               arrowIndex,
               event,
-              choosenCategory
+              filterName
             );
             break;
           case 1:
@@ -164,7 +166,7 @@ export class FiltersTemplate {
               this.isAppliancesFilterOpen,
               arrowIndex,
               event,
-              choosenCategory
+              filterName
             );
             break;
           case 2:
@@ -173,7 +175,7 @@ export class FiltersTemplate {
               this.isUstensilsFilterOpen,
               arrowIndex,
               event,
-              choosenCategory
+              filterName
             );
             break;
           default:
@@ -183,13 +185,13 @@ export class FiltersTemplate {
     }
   };
 
-  handleFilterValuesDisplay = (isFilterOpen, index, event, choosenCategory) => {
+  handleFilterValuesDisplay = (isFilterOpen, index, event, filterName) => {
     const arrowsIcons = document.getElementsByClassName("arrow-icon");
     const filterDisplayWrapper = document.getElementsByClassName("filter-search-wrapper");
     const filterWrapper = document.getElementsByClassName("filter-wrapper");
     const filtersElements = this.getFiltersElements();
     const choosenFilter = document.getElementsByClassName(
-      `js-filters-items-wrapper--${choosenCategory}`
+      `js-filters-items-wrapper--${filterName}`
     )[0];
 
     if (isFilterOpen) {
@@ -202,55 +204,53 @@ export class FiltersTemplate {
       filterWrapper[index].style.height = "fit-content";
       if (event) {
         event.target.value = "";
-        this.getFiltersItems(recipes);
-        choosenFilter.innerHTML = this.getFilteredItems(filtersElements, choosenCategory, null);
       }
     }
 
     if (searchInput.length === 0 && currentChoosenTags.length === 0) {
-      this.getFiltersItems(recipes);
-      choosenFilter.innerHTML = this.getFilteredItems(filtersElements, choosenCategory, null);
+      this.defineFiltersItems(this.recipes);
+      choosenFilter.innerHTML = this.getFilteredItems(filtersElements, filterName);
     }
 
     if (searchInput.length > 0 && currentChoosenTags.length === 0) {
-      this.updateFiltersItems(filtersElements, choosenCategory, null, choosenFilter);
+      this.updateFiltersItems(filtersElements, filterName, null, choosenFilter);
     }
 
-    this.handleFiltersTags(recipes, choosenCategory);
+    this.handleFiltersTags(recipes, filterName);
   };
 
-  filtersTagsTemplate = (choosenTag, choosenTags, choosenCategory) => {
+  choosenTagTemplate = (choosenTag, choosenTags, filterName) => {
     if (!choosenTags.includes(choosenTag)) {
       choosenTags.push(choosenTag);
       this.tagsWrapper.style.display = "flex";
       this.tagsWrapper.style.flexWrap = "wrap";
       this.tagsWrapper.innerHTML += `<div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between ${choosenTag}"><p class="text-sm font-normal">${choosenTag}</p>
-      <img data-id="${choosenTag}" data-parent="${choosenCategory}" class="remove-tag-icon cursor-pointer" src="./assets/remove-icon.svg" alt="cross icon"></div>`;
+      <img data-id="${choosenTag}" data-parent="${filterName}" class="remove-tag-icon cursor-pointer" src="./assets/remove-icon.svg" alt="cross icon"></div>`;
     }
   };
 
-  handleFiltersTags = (recipes, choosenCategory) => {
+  handleFiltersTags = (recipes, filterName) => {
     const filtersTags = document.querySelectorAll(".filters-elements");
     const filtersElements = this.getFiltersElements();
     const choosenFilter = document.getElementsByClassName(
-      `js-filters-items-wrapper--${choosenCategory}`
+      `js-filters-items-wrapper--${filterName}`
     )[0];
 
     filtersTags.forEach((filterTag) => {
-      // ajouter une function
       filterTag.addEventListener("click", (event) => {
         const choosenTag = event.target.innerText;
-        this.filtersTagsTemplate(choosenTag, currentChoosenTags, choosenCategory);
+        this.choosenTagTemplate(choosenTag, currentChoosenTags, filterName);
         const search = new SearchRecipes();
-        this.getFiltersItems(recipes);
+        this.defineFiltersItems(this.recipes);
 
         if (filteredItems.length > 0) {
-          search.searchRecipeByTags(filteredItems[0], choosenTag);
-          this.updateFiltersItems(filtersElements, choosenCategory, choosenTag, choosenFilter);
+          search.displayRecipeByTags(filteredItems[0], choosenTag);
+          this.updateFiltersItems(filtersElements, filterName, choosenTag, choosenFilter);
         } else {
-          search.searchRecipeByTags(recipes, choosenTag);
-          this.updateFiltersItems(filtersElements, choosenCategory, choosenTag, choosenFilter);
+          search.displayRecipeByTags(recipes, choosenTag);
+          this.updateFiltersItems(filtersElements, filterName, choosenTag, choosenFilter);
         }
+
         this.deleteFiltersTags();
         const arrowsIcons = document.getElementsByClassName("arrow-icon");
         const filterDisplayWrapper = document.getElementsByClassName("filter-search-wrapper");
@@ -285,7 +285,7 @@ export class FiltersTemplate {
     choosenTag,
     currentArray,
     choosenFilter,
-    choosenCategory
+    filterName
   ) => {
     filtersElements.filter((element) => {
       if (!choosenTag) {
@@ -312,15 +312,15 @@ export class FiltersTemplate {
     }
 
     const currentfiltersElements = this.getFiltersElements();
-    choosenFilter.innerHTML = this.getFilteredItems(currentfiltersElements, choosenCategory, null);
+    choosenFilter.innerHTML = this.getFilteredItems(currentfiltersElements, filterName);
   };
 
-  updateFiltersItems = (filtersElements, choosenCategory, choosenTag, choosenFilter) => {
+  updateFiltersItems = (filtersElements, filterName, choosenTag, choosenFilter) => {
     const matchingFiltersValues = [];
-    const updatedFiltersElements = filtersElements[choosenCategory]["filtersItems"];
+    const updatedFiltersElements = filtersElements[filterName]["filtersItems"];
 
     updatedFiltersElements.forEach((updatedFiltersElement) => {
-      switch (choosenCategory) {
+      switch (filterName) {
         case INGREDIENTS:
           filteredItems[0].forEach((filteredItem) => {
             filteredItem.ingredients.filter((recipeIngredient) => {
@@ -362,9 +362,8 @@ export class FiltersTemplate {
 
     let currentArray = [];
 
-    switch (choosenCategory) {
+    switch (filterName) {
       case INGREDIENTS:
-        // console.log("ingredients BEFORE", ingredients);
         ingredients.splice(0, ingredients.length);
         ingredients.push(matchingFiltersValues);
 
@@ -374,31 +373,33 @@ export class FiltersTemplate {
           choosenTag,
           currentArray,
           choosenFilter,
-          choosenCategory
+          filterName
         );
         break;
       case APPLIANCES:
-        appliances.splice(0, ingredients.length);
+        appliances.splice(0, appliances.length);
         appliances.push(matchingFiltersValues);
+
         this.removeUnmatchingRecipesTags(
           this.appliances,
           matchingFiltersValues,
           choosenTag,
           currentArray,
           choosenFilter,
-          choosenCategory
+          filterName
         );
         break;
       case USTENSILS:
-        ustensils.splice(0, ingredients.length);
+        ustensils.splice(0, ustensils.length);
         ustensils.push(matchingFiltersValues);
+
         this.removeUnmatchingRecipesTags(
           this.ustensils,
           matchingFiltersValues,
           choosenTag,
           currentArray,
           choosenFilter,
-          choosenCategory
+          filterName
         );
         break;
       default:
@@ -425,7 +426,7 @@ export class FiltersTemplate {
             }
           });
 
-          this.getFiltersItems(recipes);
+          this.defineFiltersItems(this.recipes);
           const filtersElements = this.getFiltersElements();
           const tagParent = deleteIcon.dataset.parent;
           const choosenFilter = document.getElementsByClassName(
@@ -444,7 +445,7 @@ export class FiltersTemplate {
               );
 
               this.recipesWrapper.innerHTML = displayMatchingRecipes;
-              choosenFilter.innerHTML = this.getFilteredItems(filtersElements, tagParent, null);
+              choosenFilter.innerHTML = this.getFilteredItems(filtersElements, tagParent);
             } else {
               // else, I display recipes matching main search or an error message
               const matchingRecipes = [];
@@ -474,13 +475,13 @@ export class FiltersTemplate {
             const search = new SearchRecipes();
             // & main search is empty, I display recipes matching remaining choosen tags
             if (choosenInput.length === 0) {
-              search.searchRecipeByTags(recipes, currentChoosenTags[0]);
+              search.displayRecipeByTags(recipes, currentChoosenTags[0]);
               for (let index = 1; index < currentChoosenTags.length; index++) {
-                search.searchRecipeByTags(filteredItems[0], currentChoosenTags[index]);
+                search.displayRecipeByTags(filteredItems[0], currentChoosenTags[index]);
               }
             } else {
               // & main search is used, I cross searches
-              search.searchRecipeByTags(recipes, choosenInput[0]);
+              search.displayRecipeByTags(recipes, choosenInput[0]);
             }
           }
         }

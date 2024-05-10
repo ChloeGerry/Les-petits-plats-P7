@@ -16,13 +16,12 @@ export class SearchRecipes {
   }
 
   /**
-   * Template main search algorithm
+   * Template to display recipes cards according to main search
    * @param {[object]} recipes - All recipes
-   * @returns Cards of the matching recipes
    */
 
-  searchRecipeAlgorithmTemplate = (recipes) => {
-    this.filtersTemplate.getFiltersItems(recipes);
+  displayRecipeWithMainSearch = (recipes) => {
+    this.filtersTemplate.defineFiltersItems(recipes);
     const filtersItemsAndDOMElements = this.filtersTemplate.getFiltersElements();
 
     this.searchFiltersTags.onChangeUpdateFiltersItems(
@@ -33,7 +32,7 @@ export class SearchRecipes {
     this.searchInput.addEventListener("input", (event) => {
       event.preventDefault();
       let inputValue = event.target.value;
-      const matchingRecipes = [];
+      const recipesMatchingInputValue = [];
       let displayMatchingRecipes = "";
 
       if (!inputValue) {
@@ -65,9 +64,9 @@ export class SearchRecipes {
           searchInput.splice(0, searchInput.length);
 
           if (currentChoosenTags.length > 0) {
-            this.searchRecipeByTags(recipes, currentChoosenTags[0]);
+            this.displayRecipeByTags(recipes, currentChoosenTags[0]);
             for (let index = 1; index < currentChoosenTags.length; index++) {
-              this.searchRecipeByTags(filteredItems[0], currentChoosenTags[index]);
+              this.displayRecipeByTags(filteredItems[0], currentChoosenTags[index]);
             }
           } else {
             filteredItems.splice(0, filteredItems.length);
@@ -86,7 +85,7 @@ export class SearchRecipes {
           const filteredRecipes = this.searchRecipeAlgorithm(
             filteredItems[0],
             inputValue,
-            matchingRecipes
+            recipesMatchingInputValue
           );
 
           filteredItems.push(filteredRecipes);
@@ -103,7 +102,11 @@ export class SearchRecipes {
           this.filtersTemplate.displayNumberOfRecipes(filteredRecipes);
           this.recipesWrapper.innerHTML = displayMatchingRecipes;
         } else {
-          const arrayRecipe = this.searchRecipeAlgorithm(recipes, inputValue, matchingRecipes);
+          const arrayRecipe = this.searchRecipeAlgorithm(
+            recipes,
+            inputValue,
+            recipesMatchingInputValue
+          );
           filteredItems.push(arrayRecipe);
           searchInput.push(inputValue);
 
@@ -126,14 +129,13 @@ export class SearchRecipes {
    * Main search algorithm
    * @param {[object]} recipes - All recipes
    * @param {string} inputValue - Value of the input search
-   * @param {[object]} matchingRecipes - Recipes matching the input search
+   * @param {[object]} recipesMatchingInputValue - Recipes matching the input search
    * @returns {[string]} Matching recipes
    */
 
-  searchRecipeAlgorithm = (recipes, inputValue, matchingRecipes) => {
+  searchRecipeAlgorithm = (recipes, inputValue, recipesMatchingInputValue) => {
     // ajouter la validation de la regex
     const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
-    console.log("");
     // add search algorithm for both methods
     for (let i = 0; i < recipes.length; i++) {
       for (let j = 0; j < recipes[i].ingredients.length; j++) {
@@ -147,17 +149,25 @@ export class SearchRecipes {
 
         if (
           (isNameEqual || isDescriptionEqual || isIngredientsEqual) &&
-          !matchingRecipes.includes(recipes[i])
+          !recipesMatchingInputValue.includes(recipes[i])
         ) {
-          matchingRecipes.push(recipes[i]);
+          recipesMatchingInputValue.push(recipes[i]);
           filteredItems.splice(0, filteredItems.length);
         }
       }
     }
-    return matchingRecipes;
+    return recipesMatchingInputValue;
   };
 
-  searchRecipesWithFilters = (recipes, tagValue, matchingRecipes) => {
+  /**
+   * Search by tags algorithm
+   * @param {[object]} recipes - All recipes
+   * @param {string} inputValue - Value of the input search
+   * @param {[object]} recipesMatchingInputValue - Recipes matching the filter input search
+   * @returns {[string]} Matching recipes
+   */
+
+  searchRecipesByTags = (recipes, tagValue, recipesMatchingInputValue) => {
     recipes.forEach((recipe) => {
       recipe.ingredients.filter((recipeIngredient) => {
         recipe.ustensils.filter((recipeUstensil) => {
@@ -169,37 +179,37 @@ export class SearchRecipes {
 
           if (
             (isApplianceEqual || isUstensilEqual || isIngredientsEqual) &&
-            !matchingRecipes.includes(recipe)
+            !recipesMatchingInputValue.includes(recipe)
           ) {
-            matchingRecipes.push(recipe);
+            recipesMatchingInputValue.push(recipe);
           }
         });
       });
     });
-    return matchingRecipes;
+    return recipesMatchingInputValue;
   };
 
-  searchRecipeByTags = (recipes, currentChoosenTag) => {
-    let displayMatchingRecipes = "";
-    let matchingRecipes = [];
+  /**
+   * Template to display recipes cards according to search by tags
+   * @param {[object]} recipes - All recipes
+   * @param {string} choosenTagName - Choosen tag name
+   */
 
-    const updatedArrayRecipe = this.searchRecipesWithFilters(
+  displayRecipeByTags = (recipes, choosenTagName) => {
+    let displayMatchingRecipes = "";
+    let recipesMatchingInputValue = [];
+
+    const updatedArrayRecipe = this.searchRecipesByTags(
       recipes,
-      currentChoosenTag,
-      matchingRecipes
+      choosenTagName,
+      recipesMatchingInputValue
     );
 
-    if (updatedArrayRecipe) {
+    if (filteredItems.length > 0) {
       filteredItems.splice(0, filteredItems.length);
     }
 
     filteredItems.push(updatedArrayRecipe);
-
-    if (updatedArrayRecipe.length === 0) {
-      this.filtersTemplate.displayNumberOfRecipes([]);
-      this.recipesWrapper.innerHTML = `<p>Aucune recette ne contient les filtres sélectionnés, vous pouvez essayer avec un autre filtre</p>`;
-      return;
-    }
 
     updatedArrayRecipe.forEach(
       (recipe) => (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))

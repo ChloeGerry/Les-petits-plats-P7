@@ -17,14 +17,15 @@ const handleRecipesFilter = () => {
   const filtersCategories = [INGREDIENTS, APPLIANCES, USTENSILS];
   const filtersTemplate = new FiltersTemplate();
 
-  filtersTemplate.getFiltersItems(recipes);
+  filtersTemplate.defineFiltersItems(recipes);
   const filtersElements = filtersTemplate.getFiltersElements();
   filtersCategories.map((filterCategory) =>
-    filtersTemplate.displayFiltersValues(filterCategory, filtersElements, null)
+    filtersTemplate.filtersWrapperTemplate(filterCategory, filtersElements)
   );
 
   filtersTemplate.displayNumberOfRecipes(recipes);
-  filtersTemplate.handleFiltersOpeningAndClosing(null);
+  const event = null;
+  filtersTemplate.handleFiltersOpeningAndClosing(event);
 };
 
 const init = () => {
@@ -32,7 +33,7 @@ const init = () => {
   displayRecipesCards();
 
   const searchRecipes = new SearchRecipes();
-  searchRecipes.searchRecipeAlgorithmTemplate(recipes);
+  searchRecipes.displayRecipeWithMainSearch(recipes);
 };
 
 init();

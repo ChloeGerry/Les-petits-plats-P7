@@ -16,7 +16,6 @@ export class SearchFiltersTags {
     this.inputSearchFiltersCategories = document.querySelectorAll(".search-input-filter");
     this.filterCategories = document.getElementsByClassName("filter-category");
     this.filtersTags = document.querySelectorAll(".filters-elements");
-    this.filteredFilterItems = null;
   }
 
   /**
@@ -45,16 +44,16 @@ export class SearchFiltersTags {
       }
     });
 
-    this.filteredFilterItems = filterItemsMatchingInputValue;
-    searchItemsInFilter(filterItemsMatchingInputValue, filterName);
+    if (filterItemsMatchingInputValue.length > 0) {
+      searchItemsInFilter(filterItemsMatchingInputValue, filterName);
 
-    filterItemsWrapperDOMElement.innerHTML = this.filtersTemplate.getFilteredItems(
-      filterItemsMatchingInputValue,
-      filterName,
-      this.filteredFilterItems
-    );
+      filterItemsWrapperDOMElement.innerHTML = this.filtersTemplate.getFilteredItems(
+        filterItemsMatchingInputValue,
+        filterName
+      );
 
-    this.filtersTemplate.handleFiltersTags(this.recipes, filterName);
+      this.filtersTemplate.handleFiltersTags(this.recipes, filterName);
+    }
   };
 
   /**
@@ -124,26 +123,25 @@ export class SearchFiltersTags {
               }
             });
 
-            this.filteredFilterItems = filterItemsMatchingInputValue;
-            searchItemsInFilter(filterItemsMatchingInputValue, filterName);
+            if (filterItemsMatchingInputValue.length > 0) {
+              searchItemsInFilter(filterItemsMatchingInputValue, filterName);
 
-            filterItemsWrapperDOMElement.innerHTML = this.filtersTemplate.getFilteredItems(
-              filterItemsMatchingInputValue,
-              filterName,
-              this.filteredFilterItems
-            );
+              filterItemsWrapperDOMElement.innerHTML = this.filtersTemplate.getFilteredItems(
+                filterItemsMatchingInputValue,
+                filterName
+              );
 
-            this.filtersTemplate.handleFiltersTags(this.recipes, filterName);
+              this.filtersTemplate.handleFiltersTags(this.recipes, filterName);
+            }
           }
         } else {
           // else, search is by tags without search, display recipes matching selected tags
-          this.filteredFilterItems = null;
+          this.filtersTemplate.defineFiltersItems(this.recipes);
           const filtersElements = this.filtersTemplate.getFiltersElements();
 
           filterItemsWrapperDOMElement.innerHTML = this.filtersTemplate.getFilteredItems(
             filtersElements,
-            filterName,
-            this.filteredFilterItems
+            filterName
           );
 
           this.filtersTemplate.handleFiltersTags(this.recipes, filterName);
