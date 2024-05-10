@@ -279,42 +279,6 @@ export class FiltersTemplate {
     });
   };
 
-  removeUnmatchingRecipesTags = (
-    filtersElements,
-    matchingFiltersValues,
-    choosenTag,
-    currentArray,
-    choosenFilter,
-    filterName
-  ) => {
-    filtersElements.filter((element) => {
-      if (!choosenTag) {
-        if (matchingFiltersValues.includes(element) && !currentArray.includes(element)) {
-          currentArray.push(element);
-        }
-      } else {
-        if (
-          element !== choosenTag &&
-          matchingFiltersValues.includes(element) &&
-          !currentArray.includes(element)
-        ) {
-          currentArray.push(element);
-        }
-      }
-    });
-
-    if (filtersElements === this.ingredients) {
-      this.ingredients = currentArray;
-    } else if (filtersElements === this.appliances) {
-      this.appliances = currentArray;
-    } else if (filtersElements === this.ustensils) {
-      this.ustensils = currentArray;
-    }
-
-    const currentfiltersElements = this.getFiltersElements();
-    choosenFilter.innerHTML = this.getFilteredItems(currentfiltersElements, filterName);
-  };
-
   updateFiltersItems = (filtersElements, filterName, choosenTag, choosenFilter) => {
     const matchingFiltersValues = [];
     const updatedFiltersElements = filtersElements[filterName]["filtersItems"];
@@ -328,7 +292,8 @@ export class FiltersTemplate {
 
               if (
                 isIngredientsEqual &&
-                !matchingFiltersValues.includes(recipeIngredient.ingredient)
+                !matchingFiltersValues.includes(recipeIngredient.ingredient) &&
+                choosenTag !== recipeIngredient.ingredient
               ) {
                 matchingFiltersValues.push(recipeIngredient.ingredient);
               }
@@ -370,7 +335,6 @@ export class FiltersTemplate {
         this.removeUnmatchingRecipesTags(
           this.ingredients,
           matchingFiltersValues,
-          choosenTag,
           currentArray,
           choosenFilter,
           filterName
@@ -383,7 +347,6 @@ export class FiltersTemplate {
         this.removeUnmatchingRecipesTags(
           this.appliances,
           matchingFiltersValues,
-          choosenTag,
           currentArray,
           choosenFilter,
           filterName
@@ -396,7 +359,6 @@ export class FiltersTemplate {
         this.removeUnmatchingRecipesTags(
           this.ustensils,
           matchingFiltersValues,
-          choosenTag,
           currentArray,
           choosenFilter,
           filterName
@@ -405,6 +367,31 @@ export class FiltersTemplate {
       default:
         console.log("Pas de tableau correspondant");
     }
+  };
+
+  removeUnmatchingRecipesTags = (
+    filtersElements,
+    matchingFiltersValues,
+    currentArray,
+    choosenFilter,
+    filterName
+  ) => {
+    filtersElements.filter((element) => {
+      if (matchingFiltersValues.includes(element) && !currentArray.includes(element)) {
+        currentArray.push(element);
+      }
+    });
+
+    if (filtersElements === this.ingredients) {
+      this.ingredients = currentArray;
+    } else if (filtersElements === this.appliances) {
+      this.appliances = currentArray;
+    } else if (filtersElements === this.ustensils) {
+      this.ustensils = currentArray;
+    }
+
+    const currentfiltersElements = this.getFiltersElements();
+    choosenFilter.innerHTML = this.getFilteredItems(currentfiltersElements, filterName);
   };
 
   deleteFiltersTags = () => {
@@ -479,6 +466,13 @@ export class FiltersTemplate {
               for (let index = 1; index < currentChoosenTags.length; index++) {
                 search.displayRecipeByTags(filteredItems[0], currentChoosenTags[index]);
               }
+              const filtersElements = this.getFiltersElements();
+              this.updateFiltersItems(
+                filtersElements,
+                tagParent,
+                currentChoosenTags[0],
+                choosenFilter
+              );
             } else {
               // & main search is used, I cross searches
               search.displayRecipeByTags(recipes, choosenInput[0]);
