@@ -1,10 +1,10 @@
 export class RecipesTemplate {
-  getRecipeCard(recipe) {
+  recipeCardTemplate(recipe) {
     const { name, ingredients, description, image, time } = recipe;
     const picturePath = `./assets/images/${image}`;
 
     const allIngredientsCards = ingredients.map((ingredient) => {
-      return this.ingredientsTemplate(ingredient);
+      return this.recipeIngredientsTemplate(ingredient);
     });
 
     return `<article class="bg-white rounded-large shadow-m relative">
@@ -23,7 +23,7 @@ export class RecipesTemplate {
   `;
   }
 
-  ingredientsTemplate(ingredientRecipe) {
+  recipeIngredientsTemplate(ingredientRecipe) {
     const { ingredient, quantity, unit } = ingredientRecipe;
     let displayIngredientsQuantity = "";
 
