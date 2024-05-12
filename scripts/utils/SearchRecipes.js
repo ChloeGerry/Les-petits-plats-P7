@@ -147,13 +147,13 @@ export class SearchRecipes {
 
         if (
           (isNameEqual || isDescriptionEqual || isIngredientsEqual) &&
-          !matchingRecipes.includes(recipe)
+          !recipesMatchingInputValue.includes(recipe)
         ) {
-          matchingRecipes.push(recipe);
+          recipesMatchingInputValue.push(recipe);
         }
       });
     });
-    return matchingRecipes;
+    return recipesMatchingInputValue;
   };
 
   /**
