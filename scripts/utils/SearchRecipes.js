@@ -135,7 +135,7 @@ export class SearchRecipes {
    * @returns {[string]} Matching recipes
    */
 
-  searchRecipeAlgorithm = (recipes, inputValue, matchingRecipes) => {
+  searchRecipeAlgorithm = (recipes, inputValue, recipesMatchingInputValue) => {
     for (let i = 0; i < recipes.length; i++) {
       for (let j = 0; j < recipes[i].ingredients.length; j++) {
         const isNameEqual = recipes[i].name.toLowerCase().match(inputValue.toLowerCase());
@@ -148,14 +148,14 @@ export class SearchRecipes {
 
         if (
           (isNameEqual || isDescriptionEqual || isIngredientsEqual) &&
-          !matchingRecipes.includes(recipes[i])
+          !recipesMatchingInputValue.includes(recipes[i])
         ) {
-          matchingRecipes.push(recipes[i]);
+          recipesMatchingInputValue.push(recipes[i]);
           filteredItems.splice(0, filteredItems.length);
         }
       }
     }
-    return matchingRecipes;
+    return recipesMatchingInputValue;
   };
 
   /**
