@@ -1,7 +1,7 @@
 import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 import { RecipesTemplate } from "../templates/RecipesTemplate.js";
 import { SearchFiltersTags } from "./SearchFiltersTags.js";
-import { currentChoosenTags, filteredItems, searchInput } from "./constants.js";
+import { currentChoosenTags, filteredItems, regex, searchInput } from "./constants.js";
 
 export class SearchRecipes {
   constructor() {
@@ -13,35 +13,38 @@ export class SearchRecipes {
     this.recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
     this.errorMessage = document.getElementsByClassName("error-message")[0];
     this.filtersTags = document.querySelectorAll(".filters-elements");
+    this.regex = regex;
   }
 
   /**
-   * Template main search algorithm
+   * Template to display recipes cards according to main search
    * @param {[object]} recipes - All recipes
-   * @returns Cards of the matching recipes
    */
 
-  searchRecipeAlgorithmTemplate = (recipes) => {
-    const filtersElements = this.filtersTemplate.getFiltersItems(recipes);
+  displayRecipeWithMainSearch = (recipes) => {
+    this.filtersTemplate.defineFiltersItems(recipes);
+    const filtersItemsAndDOMElements = this.filtersTemplate.getFiltersElements();
 
-    this.searchFiltersTags.onChangeUpdateFiltersItems(filtersElements, (matchingFilterItems) => {
-      this.filteredItems = matchingFilterItems;
-    });
+    this.searchFiltersTags.onChangeUpdateFiltersItems(
+      filtersItemsAndDOMElements,
+      (matchingFilterItems) => matchingFilterItems
+    );
 
     this.searchInput.addEventListener("input", (event) => {
       event.preventDefault();
       let inputValue = event.target.value;
-      const matchingRecipes = [];
+      const recipesMatchingInputValue = [];
       let displayMatchingRecipes = "";
 
       if (!inputValue) {
+        searchInput.splice(0, searchInput.length);
         this.errorMessage.style.visibility = "hidden";
         this.deleteSearchIcon.style.visibility = "hidden";
         filteredItems.splice(0, filteredItems.length);
         this.filtersTemplate.displayNumberOfRecipes(recipes);
 
         recipes.forEach(
-          (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+          (recipe) => (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))
         );
 
         this.recipesWrapper.innerHTML = displayMatchingRecipes;
@@ -49,10 +52,10 @@ export class SearchRecipes {
 
       if (inputValue.length > 0 && inputValue.length < 3) {
         this.errorMessage.style.visibility = "visible";
-        this.errorMessage.textContent = `Vous devez taper au moins 3 caractères pour afficher les recettes`;
+        this.errorMessage.textContent = `Vous devez entrer au moins 3 caractères pour afficher les recettes`;
       }
 
-      if (inputValue.length > 2) {
+      if (inputValue.length > 2 && this.regex.test(inputValue)) {
         this.errorMessage.style.visibility = "hidden";
         this.deleteSearchIcon.style.visibility = "visible";
 
@@ -63,15 +66,16 @@ export class SearchRecipes {
           searchInput.splice(0, searchInput.length);
 
           if (currentChoosenTags.length > 0) {
-            this.searchRecipeByTags(recipes, currentChoosenTags[0]);
+            this.displayRecipeByTags(recipes, currentChoosenTags[0]);
             for (let index = 1; index < currentChoosenTags.length; index++) {
-              this.searchRecipeByTags(filteredItems[0], currentChoosenTags[index]);
+              this.displayRecipeByTags(filteredItems[0], currentChoosenTags[index]);
             }
           } else {
             filteredItems.splice(0, filteredItems.length);
 
             recipes.forEach(
-              (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+              (recipe) =>
+                (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))
             );
 
             this.filtersTemplate.displayNumberOfRecipes(recipes);
@@ -83,7 +87,7 @@ export class SearchRecipes {
           const filteredRecipes = this.searchRecipeAlgorithm(
             filteredItems[0],
             inputValue,
-            matchingRecipes
+            recipesMatchingInputValue
           );
 
           filteredItems.push(filteredRecipes);
@@ -95,12 +99,16 @@ export class SearchRecipes {
           }
 
           filteredRecipes.forEach(
-            (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+            (recipe) => (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))
           );
           this.filtersTemplate.displayNumberOfRecipes(filteredRecipes);
           this.recipesWrapper.innerHTML = displayMatchingRecipes;
         } else {
-          const arrayRecipe = this.searchRecipeAlgorithm(recipes, inputValue, matchingRecipes);
+          const arrayRecipe = this.searchRecipeAlgorithm(
+            recipes,
+            inputValue,
+            recipesMatchingInputValue
+          );
           filteredItems.push(arrayRecipe);
           searchInput.push(inputValue);
 
@@ -110,7 +118,7 @@ export class SearchRecipes {
           }
 
           arrayRecipe.forEach(
-            (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+            (recipe) => (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))
           );
           this.filtersTemplate.displayNumberOfRecipes(arrayRecipe);
           this.recipesWrapper.innerHTML = displayMatchingRecipes;
@@ -123,11 +131,11 @@ export class SearchRecipes {
    * Main search algorithm
    * @param {[object]} recipes - All recipes
    * @param {string} inputValue - Value of the input search
-   * @param {[object]} matchingRecipes - Recipes matching the input search
+   * @param {[object]} recipesMatchingInputValue - Recipes matching the input search
    * @returns {[string]} Matching recipes
    */
 
-  searchRecipeAlgorithm = (recipes, inputValue, matchingRecipes) => {
+  searchRecipeAlgorithm = (recipes, inputValue, recipesMatchingInputValue) => {
     // add search algorithm for both methods
     recipes.forEach((recipe) => {
       recipe.ingredients.filter((recipeIngredient) => {
@@ -148,26 +156,60 @@ export class SearchRecipes {
     return matchingRecipes;
   };
 
-  searchRecipeByTags = (recipes, currentChoosenTag) => {
-    let displayMatchingRecipes = "";
-    let matchingRecipes = [];
+  /**
+   * Search by tags algorithm
+   * @param {[object]} recipes - All recipes
+   * @param {string} inputValue - Value of the input search
+   * @param {[object]} recipesMatchingInputValue - Recipes matching the filter input search
+   * @returns {[string]} Matching recipes
+   */
 
-    const updatedArrayRecipe = this.searchRecipeAlgorithm(
+  searchRecipesByTags = (recipes, tagValue, recipesMatchingInputValue) => {
+    recipes.forEach((recipe) => {
+      recipe.ingredients.filter((recipeIngredient) => {
+        recipe.ustensils.filter((recipeUstensil) => {
+          const isApplianceEqual = recipe.appliance.toLowerCase().match(tagValue.toLowerCase());
+          const isUstensilEqual = recipeUstensil.toLowerCase().match(tagValue.toLowerCase());
+          const isIngredientsEqual = recipeIngredient.ingredient
+            .toLowerCase()
+            .match(tagValue.toLowerCase());
+
+          if (
+            (isApplianceEqual || isUstensilEqual || isIngredientsEqual) &&
+            !recipesMatchingInputValue.includes(recipe)
+          ) {
+            recipesMatchingInputValue.push(recipe);
+          }
+        });
+      });
+    });
+    return recipesMatchingInputValue;
+  };
+
+  /**
+   * Template to display recipes cards according to search by tags
+   * @param {[object]} recipes - All recipes
+   * @param {string} choosenTagName - Choosen tag name
+   */
+
+  displayRecipeByTags = (recipes, choosenTagName) => {
+    let displayMatchingRecipes = "";
+    let recipesMatchingInputValue = [];
+
+    const updatedArrayRecipe = this.searchRecipesByTags(
       recipes,
-      currentChoosenTag,
-      matchingRecipes
+      choosenTagName,
+      recipesMatchingInputValue
     );
+
+    if (filteredItems.length > 0) {
+      filteredItems.splice(0, filteredItems.length);
+    }
 
     filteredItems.push(updatedArrayRecipe);
 
-    if (updatedArrayRecipe.length === 0) {
-      this.filtersTemplate.displayNumberOfRecipes([]);
-      this.recipesWrapper.innerHTML = `<p>Aucune recette ne contient les filtres sélectionnés, vous pouvez essayer avec un autre filtre</p>`;
-      return;
-    }
-
     updatedArrayRecipe.forEach(
-      (recipe) => (displayMatchingRecipes += this.recipesTemplate.getRecipeCard(recipe))
+      (recipe) => (displayMatchingRecipes += this.recipesTemplate.recipeCardTemplate(recipe))
     );
 
     this.filtersTemplate.displayNumberOfRecipes(updatedArrayRecipe);
