@@ -213,7 +213,15 @@ export class FiltersTemplate {
     }
 
     if (searchInput.length > 0 && currentChoosenTags.length === 0) {
-      this.updateFiltersItems(filtersElements, filterName, null, choosenFilter);
+      const choosenTag = null;
+      const filtersElements = this.getFiltersElements();
+      this.updateFiltersItems(filtersElements, filterName, choosenTag, choosenFilter);
+    }
+
+    if (currentChoosenTags.length > 0) {
+      const choosenTag = null;
+      const filtersElements = this.getFiltersElements();
+      this.updateFiltersItems(filtersElements, filterName, choosenTag, choosenFilter);
     }
 
     this.handleFiltersTags(recipes, filterName);
