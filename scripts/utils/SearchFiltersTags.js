@@ -6,6 +6,7 @@ import {
   INGREDIENTS,
   APPLIANCES,
   USTENSILS,
+  regex,
 } from "../utils/constants.js";
 import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 
@@ -16,6 +17,7 @@ export class SearchFiltersTags {
     this.inputSearchFiltersCategories = document.querySelectorAll(".search-input-filter");
     this.filterCategories = document.getElementsByClassName("filter-category");
     this.filtersTags = document.querySelectorAll(".filters-elements");
+    this.regex = regex;
   }
 
   /**
@@ -75,7 +77,7 @@ export class SearchFiltersTags {
         this.filtersTemplate.handleFiltersOpeningAndClosing(event);
 
         // if the search is by filling the filter input
-        if (inputValue) {
+        if (inputValue && this.regex.test(inputValue)) {
           const filterItemsMatchingInputValue = [];
 
           if (ingredients.length > 0 || appliances.length > 0 || ustensils.length > 0) {

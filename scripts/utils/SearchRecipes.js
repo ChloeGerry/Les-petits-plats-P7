@@ -1,7 +1,7 @@
 import { FiltersTemplate } from "../templates/FiltersTemplate.js";
 import { RecipesTemplate } from "../templates/RecipesTemplate.js";
 import { SearchFiltersTags } from "./SearchFiltersTags.js";
-import { currentChoosenTags, filteredItems, searchInput } from "./constants.js";
+import { currentChoosenTags, filteredItems, regex, searchInput } from "./constants.js";
 
 export class SearchRecipes {
   constructor() {
@@ -13,6 +13,7 @@ export class SearchRecipes {
     this.recipesWrapper = document.getElementsByClassName("recipes-wrapper")[0];
     this.errorMessage = document.getElementsByClassName("error-message")[0];
     this.filtersTags = document.querySelectorAll(".filters-elements");
+    this.regex = regex;
   }
 
   /**
@@ -36,6 +37,7 @@ export class SearchRecipes {
       let displayMatchingRecipes = "";
 
       if (!inputValue) {
+        searchInput.splice(0, searchInput.length);
         this.errorMessage.style.visibility = "hidden";
         this.deleteSearchIcon.style.visibility = "hidden";
         filteredItems.splice(0, filteredItems.length);
@@ -50,10 +52,10 @@ export class SearchRecipes {
 
       if (inputValue.length > 0 && inputValue.length < 3) {
         this.errorMessage.style.visibility = "visible";
-        this.errorMessage.textContent = `Vous devez taper au moins 3 caractères pour afficher les recettes`;
+        this.errorMessage.textContent = `Vous devez entrer au moins 3 caractères pour afficher les recettes`;
       }
 
-      if (inputValue.length > 2) {
+      if (inputValue.length > 2 && this.regex.test(inputValue)) {
         this.errorMessage.style.visibility = "hidden";
         this.deleteSearchIcon.style.visibility = "visible";
 
@@ -134,28 +136,7 @@ export class SearchRecipes {
    */
 
   searchRecipeAlgorithm = (recipes, inputValue, recipesMatchingInputValue) => {
-    // ajouter la validation de la regex
-    const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
     // add search algorithm for both methods
-    for (let i = 0; i < recipes.length; i++) {
-      for (let j = 0; j < recipes[i].ingredients.length; j++) {
-        const isNameEqual = recipes[i].name.toLowerCase().match(inputValue.toLowerCase());
-        const isDescriptionEqual = recipes[i].description
-          .toLowerCase()
-          .match(inputValue.toLowerCase());
-        const isIngredientsEqual = recipes[i].ingredients[j].ingredient
-          .toLowerCase()
-          .match(inputValue.toLowerCase());
-
-        if (
-          (isNameEqual || isDescriptionEqual || isIngredientsEqual) &&
-          !recipesMatchingInputValue.includes(recipes[i])
-        ) {
-          recipesMatchingInputValue.push(recipes[i]);
-          filteredItems.splice(0, filteredItems.length);
-        }
-      }
-    }
     return recipesMatchingInputValue;
   };
 
