@@ -150,6 +150,7 @@ export class SearchRecipes {
           !recipesMatchingInputValue.includes(recipe)
         ) {
           recipesMatchingInputValue.push(recipe);
+          filteredItems.splice(0, filteredItems.length);
         }
       });
     });
