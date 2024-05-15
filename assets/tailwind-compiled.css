@@ -902,6 +902,10 @@ video {
   width: 75%;
 }
 
+.w-4 {
+  width: 1rem;
+}
+
 .w-48 {
   width: 12rem;
 }
@@ -932,10 +936,6 @@ video {
 
 .w-search {
   width: 73%;
-}
-
-.w-4 {
-  width: 1rem;
 }
 
 .flex-shrink {
