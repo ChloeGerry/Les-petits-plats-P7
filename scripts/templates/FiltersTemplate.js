@@ -100,19 +100,20 @@ export class FiltersTemplate {
    */
 
   filtersWrapperTemplate = (filterName, filtersElements) => {
-    this.filtersSection.innerHTML += `<div class="filter-wrapper absolute flex z-10 flex-col bg-white p-4 h-fit rounded-xl w-56 overflow-y-auto top-[690px]">
-      <div class="flex justify-between w-48">
-        <p class="m-0 filter-category">${filterName}</p>
-        <img class="arrow-icon cursor-pointer" src="./assets/arrow.svg" alt="arrow icon">
-      </div>
-      <div class="filter-search-wrapper flex-col relative hidden">
-        <input class="search-input-filter border border-style:solid mb-6 mt-4 p-3" type="search">
-        <img class="absolute right-3 top-8" src="./assets/search-grey-icon.svg" alt="search icon">
-        <div class="js-filters-items-wrapper--${filterName}">
-          ${this.getFilteredItems(filtersElements, filterName)}
+    this.filtersSection.innerHTML += `
+      <div class="filter-wrapper absolute flex z-10 flex-col bg-white p-4 h-fit rounded-xl w-56 overflow-y-auto top-[690px]">
+        <div class="flex justify-between w-48">
+          <p class="m-0 filter-category">${filterName}</p>
+          <img class="arrow-icon cursor-pointer w-4" src="./assets/arrow.svg" alt="arrow icon">
+        </div>
+        <div class="filter-search-wrapper flex-col relative hidden">
+          <input class="search-input-filter border border-style:solid mb-6 mt-4 p-3" type="search">
+          <img class="absolute right-3 top-8" src="./assets/search-grey-icon.svg" alt="search icon">
+          <div class="js-filters-items-wrapper--${filterName}">
+            ${this.getFilteredItems(filtersElements, filterName)}
+          </div>
         </div>
       </div>
-    </div>
    `;
   };
 
@@ -189,7 +190,6 @@ export class FiltersTemplate {
     const arrowsIcons = document.getElementsByClassName("arrow-icon");
     const filterDisplayWrapper = document.getElementsByClassName("filter-search-wrapper");
     const filterWrapper = document.getElementsByClassName("filter-wrapper");
-    const filtersElements = this.getFiltersElements();
     const choosenFilter = document.getElementsByClassName(
       `js-filters-items-wrapper--${filterName}`
     )[0];
@@ -209,6 +209,7 @@ export class FiltersTemplate {
 
     if (searchInput.length === 0 && currentChoosenTags.length === 0) {
       this.defineFiltersItems(this.recipes);
+      const filtersElements = this.getFiltersElements();
       choosenFilter.innerHTML = this.getFilteredItems(filtersElements, filterName);
     }
 
@@ -232,8 +233,12 @@ export class FiltersTemplate {
       choosenTags.push(choosenTag);
       this.tagsWrapper.style.display = "flex";
       this.tagsWrapper.style.flexWrap = "wrap";
-      this.tagsWrapper.innerHTML += `<div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between ${choosenTag}"><p class="text-sm font-normal">${choosenTag}</p>
-      <img data-id="${choosenTag}" data-parent="${filterName}" class="remove-tag-icon cursor-pointer" src="./assets/remove-icon.svg" alt="cross icon"></div>`;
+      this.tagsWrapper.innerHTML += `
+        <div class="flex bg-yellow p-4 h-fit rounded-xl w-56 justify-between ${choosenTag}">
+          <p class="text-sm font-normal">${choosenTag}</p>
+          <img data-id="${choosenTag}" data-parent="${filterName}" class="remove-tag-icon cursor-pointer" src="./assets/remove-icon.svg" alt="cross icon">
+        </div>
+      `;
     }
   };
 
@@ -483,7 +488,17 @@ export class FiltersTemplate {
               );
             } else {
               // & main search is used, I cross searches
-              search.displayRecipeByTags(recipes, choosenInput[0]);
+              const search = new SearchRecipes();
+
+              const matchingRecipes = [];
+              const updatedArrayRecipe = search.searchRecipeAlgorithm(
+                recipes,
+                choosenInput[0],
+                matchingRecipes
+              );
+
+              filteredItems.push(updatedArrayRecipe);
+              search.displayRecipeByTags(filteredItems[0], currentChoosenTags[0]);
             }
           }
         }
